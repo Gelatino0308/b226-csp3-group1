@@ -1,4 +1,4 @@
 package com.joysistvi.sigsys.service;
 
-public class TranscriptRequestServiceImpl {
+public class TranscriptRequestServiceImpl implements TranscriptRequestService {
 }

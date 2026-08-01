@@ -1,4 +1,4 @@
 package com.joysistvi.sigsys.service;
 
-public class EnrollmentServiceImpl {
+public class EnrollmentServiceImpl implements EnrollmentService {
 }

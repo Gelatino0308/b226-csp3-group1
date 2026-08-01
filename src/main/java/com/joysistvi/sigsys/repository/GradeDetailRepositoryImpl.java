@@ -1,4 +1,4 @@
 package com.joysistvi.sigsys.repository;
 
-public class GradeDetailRepositoryImpl {
+public class GradeDetailRepositoryImpl implements GradeDetailRepository {
 }

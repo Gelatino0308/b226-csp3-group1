@@ -1,4 +1,4 @@
 package com.joysistvi.sigsys.repository;
 
-public class TranscriptRequestRepositoryImpl {
+public class TranscriptRequestRepositoryImpl implements TranscriptRequestRepository {
 }

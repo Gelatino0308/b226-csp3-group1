@@ -1,4 +1,4 @@
 package com.joysistvi.sigsys.service;
 
-public class StudentServiceImpl {
+public class StudentServiceImpl implements StudentService {
 }

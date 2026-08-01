@@ -1,4 +1,4 @@
 package com.joysistvi.sigsys.repository;
 
-public class CourseRepositoryImpl {
+public class CourseRepositoryImpl implements CourseRepository {
 }

@@ -1,4 +1,4 @@
 package com.joysistvi.sigsys.service;
 
-public class SystemConfigServiceImpl {
+public class SystemConfigServiceImpl implements SystemConfigService {
 }

@@ -1,4 +1,4 @@
 package com.joysistvi.sigsys.repository;
 
-public class SystemConfigRepositoryImpl {
+public class SystemConfigRepositoryImpl implements SystemConfigRepository {
 }
