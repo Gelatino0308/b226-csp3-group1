@@ -1,17 +1,19 @@
 package com.joysistvi.sigsys.model;
 
+import com.joysistvi.sigsys.enumeration.UserRole;
+
 import java.time.LocalDateTime; // latest class to map timestamp
 
 public class User {
     private int userId;
     private String username;
     private String passwordHash;
-    private String role; // Enum values: 'STUDENT', 'FACULTY', 'REGISTRAR', 'ADMIN'
+    private UserRole role; // Enum values: 'STUDENT', 'FACULTY', 'REGISTRAR', 'ADMIN'
     private String email;
-    private boolean isActive;
+    private int isActive;
     private LocalDateTime createdAt;
 
-    public User(int userId, String username, String passwordHash, String role, String email, boolean isActive, LocalDateTime createdAt) {
+    public User(int userId, String username, String passwordHash, UserRole role, String email, int isActive, LocalDateTime createdAt) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -21,7 +23,7 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public User(String username, String passwordHash, String role, String email, boolean isActive, LocalDateTime createdAt) {
+    public User(String username, String passwordHash, UserRole role, String email, int isActive, LocalDateTime createdAt) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.role = role;
@@ -54,11 +56,11 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 
@@ -70,11 +72,11 @@ public class User {
         this.email = email;
     }
 
-    public boolean isActive() {
+    public int isActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(int active) {
         isActive = active;
     }
 
