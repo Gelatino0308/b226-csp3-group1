@@ -21,24 +21,24 @@ public class DashboardView {
 
         while (loggedIn) {
             ClearScreenUtil.clearScreen();
-            System.out.println("\n========================================================");
+            System.out.println("\n=============================================");
             System.out.println("      STUDENT INFORMATION & GRADING SYSTEM    ");
-            System.out.println("=========================================================");
+            System.out.println("==============================================");
             System.out.println("\nWelcome, " + user.getUsername() + " (" + user.getRole() + ")");
 
             // Route to specific role menus
             switch (user.getRole()) {
                 case ADMIN:
-                    showAdminMenu();
+                    loggedIn = showAdminMenu();
                     break;
                 case REGISTRAR:
-                    showRegistrarMenu();
+                    loggedIn = showRegistrarMenu();
                     break;
                 case FACULTY:
-                    showFacultyMenu();
+                    loggedIn = showFacultyMenu();
                     break;
                 case STUDENT:
-                    showStudentMenu();
+                    loggedIn = showStudentMenu();
                     break;
                 default:
                     System.out.println("System Error: Unknown role.");
@@ -49,7 +49,7 @@ public class DashboardView {
     }
 
 
-    private void showAdminMenu() {
+    private boolean showAdminMenu() {
         System.out.println("[1] Manage Users");
         System.out.println("[2] Manage System Configuration");
         System.out.println("[3] Maintain Security");
@@ -58,17 +58,20 @@ public class DashboardView {
 
         int choice = InputCheckerUtil.readIntChoice(scanner);
 
+        // TODO: implement and add admin methods
         switch (choice) {
             case 1:
             case 2:
             case 0:
-                return;
+                return false;
             default:
                 System.out.println("\n> Invalid choice. Please try again.");
         }
+
+        return true;
     }
 
-    private void showRegistrarMenu() {
+    private boolean showRegistrarMenu() {
         System.out.println("[1] Manage Student Records");
         System.out.println("[2] Process Registration");
         System.out.println("[3] Enroll Student");
@@ -79,6 +82,7 @@ public class DashboardView {
 
         int choice = InputCheckerUtil.readIntChoice(scanner);
 
+        // TODO: implement and add registrar methods
         switch (choice) {
             case 1:
             case 2:
@@ -86,13 +90,15 @@ public class DashboardView {
             case 4:
             case 5:
             case 0:
-                return;
+                return false;
             default:
                 System.out.println("\n> Invalid choice. Please try again.");
         }
+
+        return true;
     }
 
-    private void showFacultyMenu() {
+    private boolean showFacultyMenu() {
         System.out.println("[1] View Assigned Courses");
         System.out.println("[2] View Assigned Rosters");
         System.out.println("[3] Record Course Grades");
@@ -102,19 +108,22 @@ public class DashboardView {
 
         int choice = InputCheckerUtil.readIntChoice(scanner);
 
+        // TODO: implement and add faculty methods
         switch (choice) {
             case 1:
             case 2:
             case 3:
             case 4:
             case 0:
-                return;
+                return false;
             default:
                 System.out.println("\n> Invalid choice. Please try again.");
         }
+
+        return true;
     }
 
-    private void showStudentMenu() {
+    private boolean showStudentMenu() {
         System.out.println("[1] View Personal Information");
         System.out.println("[2] Register for Courses");
         System.out.println("[3] View Course Schedule");
@@ -125,6 +134,7 @@ public class DashboardView {
 
         int choice = InputCheckerUtil.readIntChoice(scanner);
 
+        // TODO: implement and add student methods
         switch (choice) {
             case 1:
             case 2:
@@ -132,10 +142,12 @@ public class DashboardView {
             case 4:
             case 5:
             case 0:
-                return;
+                return false;
             default:
                 System.out.println("\n> Invalid choice. Please try again.");
         }
+
+        return true;
     }
 
 }
