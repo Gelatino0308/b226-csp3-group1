@@ -1,11 +1,12 @@
 package com.joysistvi.sigsys.service;
 
-import com.joysistvi.sigsys.dao.AcademicPeriodDao;
+import com.joysistvi.sigsys.repository.AcademicPeriodRepository;
+import com.joysistvi.sigsys.repository.AcademicPeriodRepositoryImpl;
 import com.joysistvi.sigsys.model.AcademicPeriod;
 import java.util.List;
 
 public class AcademicPeriodServiceImpl implements AcademicPeriodService {
-    private final AcademicPeriodDao periodDao = new AcademicPeriodDao();
+    private final AcademicPeriodRepository periodRepository = new AcademicPeriodRepositoryImpl();
 
     @Override
     public boolean addPeriod(AcademicPeriod period) {
@@ -15,16 +16,16 @@ public class AcademicPeriodServiceImpl implements AcademicPeriodService {
             System.err.println("Error: Start date cannot be after end date.");
             return false;
         }
-        return periodDao.createPeriod(period);
+        return periodRepository.createPeriod(period);
     }
 
     @Override
     public List<AcademicPeriod> getAllPeriods() {
-        return periodDao.getAllPeriods();
+        return periodRepository.getAllPeriods();
     }
 
     @Override
     public AcademicPeriod getActivePeriod() {
-        return periodDao.getActivePeriod();
+        return periodRepository.getActivePeriod();
     }
 }

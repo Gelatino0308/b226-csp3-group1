@@ -11,4 +11,5 @@ public interface UserRepository {
     List<User> getAllUsers();
     boolean updateUser(User user);
     boolean updatePassword(int userId, String newPasswordHash);
+    boolean deleteUser(int userId);
 }

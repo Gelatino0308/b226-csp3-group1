@@ -27,17 +27,17 @@ public class DashboardView {
             System.out.println("\nWelcome, " + user.getUsername() + " (" + user.getRole() + ")");
 
             // Route to specific role menus
-            switch (user.getRole()) {
-                case ADMIN:
+            switch (user.getRole().toUpperCase()) {
+                case "ADMIN":
                     loggedIn = showAdminMenu();
                     break;
-                case REGISTRAR:
+                case "REGISTRAR":
                     loggedIn = showRegistrarMenu();
                     break;
-                case FACULTY:
+                case "FACULTY":
                     loggedIn = showFacultyMenu();
                     break;
-                case STUDENT:
+                case "STUDENT":
                     loggedIn = showStudentMenu();
                     break;
                 default:
