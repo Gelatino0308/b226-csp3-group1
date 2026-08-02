@@ -1,11 +1,15 @@
 package com.joysistvi.sigsys.service;
 
-import com.joysistvi.sigsys.dao.AttendanceDao;
+import com.joysistvi.sigsys.repository.AttendanceRepository;
+import com.joysistvi.sigsys.repository.AttendanceRepositoryImpl;
+import com.joysistvi.sigsys.repository.EnrollmentRepository;
+import com.joysistvi.sigsys.repository.EnrollmentRepositoryImpl;
 import com.joysistvi.sigsys.model.Attendance;
 import java.util.List;
 
 public class AttendanceServiceImpl implements AttendanceService {
-    private final AttendanceDao attendanceDao = new AttendanceDao();
+    private final AttendanceRepository attendanceRepository = new AttendanceRepositoryImpl();
+    private final EnrollmentRepository enrollmentRepository = new EnrollmentRepositoryImpl();
 
     @Override
     public boolean recordAttendance(Attendance attendance) {
@@ -14,12 +18,13 @@ public class AttendanceServiceImpl implements AttendanceService {
                 || !attendance.getStatus().trim().toUpperCase().matches("PRESENT|ABSENT|LATE|EXCUSED")) {
             return false;
         }
+        if (enrollmentRepository.getEnrollmentById(attendance.getEnrollmentId()) == null) return false;
         attendance.setStatus(attendance.getStatus().trim().toUpperCase());
-        return attendanceDao.saveAttendance(attendance);
+        return attendanceRepository.saveAttendance(attendance);
     }
 
     @Override
     public List<Attendance> getAttendanceByEnrollment(int enrollmentId) {
-        return enrollmentId > 0 ? attendanceDao.getAttendanceByEnrollmentId(enrollmentId) : java.util.Collections.emptyList();
+        return enrollmentId > 0 ? attendanceRepository.getAttendanceByEnrollmentId(enrollmentId) : java.util.Collections.emptyList();
     }
 }

@@ -1,26 +1,13 @@
 package com.joysistvi.sigsys.controller;
 
-import com.joysistvi.sigsys.dao.SystemConfigDao;
 import com.joysistvi.sigsys.model.SystemConfig;
+import com.joysistvi.sigsys.service.SystemConfigService;
+import com.joysistvi.sigsys.service.SystemConfigServiceImpl;
 import java.util.List;
 
 public class SystemConfigController {
-    private final SystemConfigDao configDao;
-
-    public SystemConfigController() {
-        this.configDao = new SystemConfigDao();
-    }
-
-    public String getConfig(String key) {
-        return configDao.getValueByKey(key);
-    }
-
-    public boolean updateConfig(String key, String value) {
-        if (key == null || key.trim().isEmpty()) return false;
-        return configDao.updateValue(key, value);
-    }
-
-    public List<SystemConfig> getAllConfigs() {
-        return configDao.getAll();
-    }
+    private final SystemConfigService configService = new SystemConfigServiceImpl();
+    public String getConfig(String key) { return configService.getConfig(key); }
+    public boolean updateConfig(String key, String value) { return configService.updateConfig(key, value); }
+    public List<SystemConfig> getAllConfigs() { return configService.getAllConfigs(); }
 }

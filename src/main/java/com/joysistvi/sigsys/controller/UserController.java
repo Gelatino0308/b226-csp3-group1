@@ -29,6 +29,10 @@ public class UserController {
         return user;
     }
 
+    public User handleLogin(String username, String password) {
+        return login(username, password);
+    }
+
     /**
      * Registers a new user account into the system.
      */

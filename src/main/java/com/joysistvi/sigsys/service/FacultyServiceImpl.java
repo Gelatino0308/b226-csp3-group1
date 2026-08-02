@@ -1,11 +1,12 @@
 package com.joysistvi.sigsys.service;
 
-import com.joysistvi.sigsys.dao.FacultyDao;
+import com.joysistvi.sigsys.repository.FacultyRepository;
+import com.joysistvi.sigsys.repository.FacultyRepositoryImpl;
 import com.joysistvi.sigsys.model.Faculty;
 import java.util.List;
 
 public class FacultyServiceImpl implements FacultyService {
-    private final FacultyDao facultyDao = new FacultyDao();
+    private final FacultyRepository facultyRepository = new FacultyRepositoryImpl();
 
     @Override
     public boolean registerFaculty(Faculty faculty) {
@@ -13,16 +14,21 @@ public class FacultyServiceImpl implements FacultyService {
                 || faculty.getLastName() == null || faculty.getDepartment() == null
                 || faculty.getFirstName().trim().isEmpty() || faculty.getLastName().trim().isEmpty()
                 || faculty.getDepartment().trim().isEmpty()) return false;
-        return facultyDao.createFaculty(faculty);
+        return facultyRepository.createFaculty(faculty);
     }
 
     @Override
     public Faculty getFacultyById(int facultyId) {
-        return facultyId > 0 ? facultyDao.getFacultyById(facultyId) : null;
+        return facultyId > 0 ? facultyRepository.getFacultyById(facultyId) : null;
+    }
+
+    @Override
+    public Faculty getFacultyByUserId(int userId) {
+        return userId > 0 ? facultyRepository.getFacultyByUserId(userId) : null;
     }
 
     @Override
     public List<Faculty> getAllFaculty() {
-        return facultyDao.getAllFaculty();
+        return facultyRepository.getAllFaculty();
     }
 }

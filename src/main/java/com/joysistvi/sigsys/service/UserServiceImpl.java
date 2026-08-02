@@ -1,12 +1,13 @@
 package com.joysistvi.sigsys.service;
 
-import com.joysistvi.sigsys.dao.UserDao;
+import com.joysistvi.sigsys.repository.UserRepository;
+import com.joysistvi.sigsys.repository.UserRepositoryImpl;
 import com.joysistvi.sigsys.model.User;
 import org.mindrot.jbcrypt.BCrypt;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
-    private final UserDao userDao = new UserDao();
+    private final UserRepository userRepository = new UserRepositoryImpl();
 
     @Override
     public User authenticate(String username, String password) {
@@ -16,7 +17,7 @@ public class UserServiceImpl implements UserService {
 
         String trimmedUser = username.trim();
 
-        User user = userDao.getUserByUsername(trimmedUser);
+        User user = userRepository.getUserByUsername(trimmedUser);
         if (user != null) {
             return user.isActive() && matchesPassword(password, user.getPasswordHash()) ? user : null;
         }
@@ -43,39 +44,39 @@ public class UserServiceImpl implements UserService {
         user.setUsername(user.getUsername().trim());
         user.setRole(user.getRole().trim().toUpperCase());
         user.setPasswordHash(BCrypt.hashpw(user.getPasswordHash(), BCrypt.gensalt()));
-        return userDao.createUser(user);
+        return userRepository.createUser(user);
     }
 
     @Override
     public User getUserById(int userId) {
-        return userId > 0 ? userDao.getUserById(userId) : null;
+        return userId > 0 ? userRepository.getUserById(userId) : null;
     }
 
     @Override
     public User getUserByUsername(String username) {
-        return isBlank(username) ? null : userDao.getUserByUsername(username.trim());
+        return isBlank(username) ? null : userRepository.getUserByUsername(username.trim());
     }
 
     @Override
     public List<User> getAllUsers() {
-        return userDao.getAllUsers();
+        return userRepository.getAllUsers();
     }
 
     @Override
     public boolean updateUser(User user) {
         return user != null && user.getUserId() > 0 && !isBlank(user.getRole())
-                && !isBlank(user.getEmail()) && userDao.updateUser(user);
+                && !isBlank(user.getEmail()) && userRepository.updateUser(user);
     }
 
     @Override
     public boolean changePassword(int userId, String newPassword) {
         if (userId <= 0 || isBlank(newPassword)) return false;
-        return userDao.updatePassword(userId, BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+        return userRepository.updatePassword(userId, BCrypt.hashpw(newPassword, BCrypt.gensalt()));
     }
 
     @Override
     public boolean deleteUser(int userId) {
-        return userId > 0 && userDao.deleteUser(userId);
+        return userId > 0 && userRepository.deleteUser(userId);
     }
 
     private boolean matchesPassword(String password, String storedPassword) {
