@@ -2,6 +2,7 @@ package com.joysistvi.sigsys.cliview;
 
 import com.joysistvi.sigsys.controller.UserController;
 import com.joysistvi.sigsys.model.User;
+import com.joysistvi.sigsys.util.ConsoleUIUtil;
 
 import java.util.Scanner;
 
@@ -15,14 +16,14 @@ public class MainView {
     }
 
     public void start() {
-        System.out.println("==================================================");
-        System.out.println("   STUDENT INFORMATION & GRADING SYSTEM (SIGS)   ");
-        System.out.println("==================================================");
+        ConsoleUIUtil.printBigTitle("WELCOME TO...");
+        ConsoleUIUtil.printBannerTitle();
 
         boolean running = true;
         while (running) {
-            System.out.println("\n[1] Login");
-            System.out.println("[2] Exit System");
+            ConsoleUIUtil.printBoxedSectionHeader("MAIN MENU");
+            ConsoleUIUtil.printCenteredMenuOption(1, "Login");
+            ConsoleUIUtil.printCenteredMenuOption(2, "Exit System");
             System.out.print("Select an option: ");
 
             String choice = scanner.nextLine();
@@ -32,13 +33,13 @@ public class MainView {
                     System.out.println("Exiting system. Goodbye!");
                     running = false;
                 }
-                default -> System.out.println("Invalid selection. Please try again.");
+                default -> ConsoleUIUtil.printError("Invalid selection. Please try again.");
             }
         }
     }
 
     private void handleLogin() {
-        System.out.println("\n--- USER LOGIN ---");
+        ConsoleUIUtil.printBoxedSectionHeader("USER LOGIN");
         System.out.print("Enter Username: ");
         String username = scanner.nextLine();
         System.out.print("Enter Password: ");

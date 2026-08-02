@@ -14,6 +14,7 @@ import com.joysistvi.sigsys.model.Enrollment;
 import com.joysistvi.sigsys.model.Student;
 import com.joysistvi.sigsys.model.TranscriptRequest;
 import com.joysistvi.sigsys.model.User;
+import com.joysistvi.sigsys.util.ConsoleUIUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -41,17 +42,15 @@ public class RegistrarView {
     public void showMenu() {
         boolean active = true;
         while (active) {
-            System.out.println("\n=================================");
-            System.out.println("       REGISTRAR DASHBOARD       ");
-            System.out.println("=================================");
-            System.out.println("[1] Manage Students");
-            System.out.println("[2] Manage Courses");
-            System.out.println("[3] Process Registration");
-            System.out.println("[4] Enroll Student");
-            System.out.println("[5] Manage Academic Periods");
-            System.out.println("[6] Generate Official Transcripts");
-            System.out.println("[7] Process Transcript Request");
-            System.out.println("[8] Logout");
+            ConsoleUIUtil.printBoxedSectionHeader("REGISTRAR DASHBOARD");
+            ConsoleUIUtil.printCenteredMenuOption(1, "Manage Students");
+            ConsoleUIUtil.printCenteredMenuOption(2, "Manage Courses");
+            ConsoleUIUtil.printCenteredMenuOption(3, "Process Registration");
+            ConsoleUIUtil.printCenteredMenuOption(4, "Enroll Student");
+            ConsoleUIUtil.printCenteredMenuOption(5, "Manage Academic Periods");
+            ConsoleUIUtil.printCenteredMenuOption(6, "Generate Official Transcripts");
+            ConsoleUIUtil.printCenteredMenuOption(7, "Process Transcript Request");
+            ConsoleUIUtil.printCenteredMenuOption(8, "Logout");
             System.out.print("Choose option: ");
             switch (scanner.nextLine()) {
                 case "1" -> manageStudentsMenu();
@@ -62,7 +61,7 @@ public class RegistrarView {
                 case "6" -> generateTranscript();
                 case "7" -> processTranscript();
                 case "8" -> active = false;
-                default -> System.out.println("Invalid option.");
+                default -> ConsoleUIUtil.printError("Invalid option.");
             }
         }
     }
@@ -70,12 +69,12 @@ public class RegistrarView {
     private void manageCourses() {
         boolean active = true;
         while (active) {
-            System.out.println("\n--- MANAGE COURSES ---");
-            System.out.println("[1] View Courses");
-            System.out.println("[2] Add Course");
-            System.out.println("[3] Remove Course");
-            System.out.println("[4] Manage Course Sections");
-            System.out.println("[5] Back");
+            ConsoleUIUtil.printBoxedSectionHeader("MANAGE COURSES");
+            ConsoleUIUtil.printCenteredMenuOption(1, "View Courses");
+            ConsoleUIUtil.printCenteredMenuOption(2, "Add Course");
+            ConsoleUIUtil.printCenteredMenuOption(3, "Remove Course");
+            ConsoleUIUtil.printCenteredMenuOption(4, "Manage Course Sections");
+            ConsoleUIUtil.printCenteredMenuOption(5, "Back");
             System.out.print("Choose option: ");
             switch (scanner.nextLine()) {
                 case "1" -> listCourses();
@@ -83,14 +82,14 @@ public class RegistrarView {
                 case "3" -> removeCourse();
                 case "4" -> manageSections();
                 case "5" -> active = false;
-                default -> System.out.println("Invalid option.");
+                default -> ConsoleUIUtil.printError("Invalid option.");
             }
         }
     }
 
     private void listCourses() {
         List<Course> courses = courseController.getAllCourses();
-        System.out.println("\n--- COURSE CATALOG ---");
+        ConsoleUIUtil.printBoxedSectionHeader("COURSE CATALOG");
         if (courses.isEmpty()) {
             System.out.println("No courses found.");
             return;
@@ -138,21 +137,21 @@ public class RegistrarView {
         }
         boolean active = true;
         while (active) {
-            System.out.println("\n--- SECTIONS FOR " + period.getTermName() + " ---");
+            ConsoleUIUtil.printBoxedSectionHeader("SECTIONS FOR " + period.getTermName());
             for (CourseSection section : sectionController.getSectionsByPeriod(period.getPeriodId())) {
                 System.out.printf("Section %d | Course %d | Faculty %d | %s %s | Room %s | Capacity %d%n",
                         section.getSectionId(), section.getCourseId(), section.getFacultyId(), section.getScheduleDays(),
                         section.getScheduleTime(), section.getRoom(), section.getCapacity());
             }
-            System.out.println("[1] Add Section");
-            System.out.println("[2] Remove Section");
-            System.out.println("[3] Back");
+            ConsoleUIUtil.printCenteredMenuOption(1, "Add Section");
+            ConsoleUIUtil.printCenteredMenuOption(2, "Remove Section");
+            ConsoleUIUtil.printCenteredMenuOption(3, "Back");
             System.out.print("Choose option: ");
             switch (scanner.nextLine()) {
                 case "1" -> addSection(period.getPeriodId());
                 case "2" -> removeSection();
                 case "3" -> active = false;
-                default -> System.out.println("Invalid option.");
+                default -> ConsoleUIUtil.printError("Invalid option.");
             }
         }
     }
@@ -246,7 +245,7 @@ public class RegistrarView {
 
     private void registerStudent() {
         List<User> accounts = userController.getAllUsers();
-        System.out.println("\n--- STUDENT ACCOUNTS AWAITING REGISTRATION ---");
+        ConsoleUIUtil.printBoxedSectionHeader("STUDENT ACCOUNTS AWAITING REGISTRATION");
         boolean pendingStudentFound = false;
         for (User account : accounts) {
             if ("STUDENT".equals(account.getRole()) && studentController.getStudentByUserId(account.getUserId()) == null) {
@@ -302,24 +301,24 @@ public class RegistrarView {
     private void manageStudentsMenu() {
         boolean active = true;
         while (active) {
-            System.out.println("\n--- MANAGE STUDENTS ---");
-            System.out.println("[1] Create New Student Account");
-            System.out.println("[2] Register Student Profile");
-            System.out.println("[3] View/Update Student Records");
-            System.out.println("[4] Back");
+            ConsoleUIUtil.printBoxedSectionHeader("MANAGE STUDENTS");
+            ConsoleUIUtil.printCenteredMenuOption(1, "Create New Student Account");
+            ConsoleUIUtil.printCenteredMenuOption(2, "Register Student Profile");
+            ConsoleUIUtil.printCenteredMenuOption(3, "View/Update Student Records");
+            ConsoleUIUtil.printCenteredMenuOption(4, "Back");
             System.out.print("Choose option: ");
             switch (scanner.nextLine()) {
                 case "1" -> createStudentAccount();
                 case "2" -> registerStudent();
                 case "3" -> viewAndUpdateStudents();
                 case "4" -> active = false;
-                default -> System.out.println("Invalid option.");
+                default -> ConsoleUIUtil.printError("Invalid option.");
             }
         }
     }
 
     private void createStudentAccount() {
-        System.out.println("\n--- CREATE STUDENT ACCOUNT ---");
+        ConsoleUIUtil.printBoxedSectionHeader("CREATE STUDENT ACCOUNT");
         System.out.print("Username: ");
         String username = scanner.nextLine().trim();
         System.out.print("Password: ");
@@ -387,9 +386,9 @@ public class RegistrarView {
         try {
             System.out.print("Enrollment ID: ");
             int id = Integer.parseInt(scanner.nextLine());
-            System.out.println("[1] ENROLLED");
-            System.out.println("[2] DROPPED");
-            System.out.println("[0] Cancel");
+            ConsoleUIUtil.printCenteredMenuOption(1, "ENROLLED");
+            ConsoleUIUtil.printCenteredMenuOption(2, "DROPPED");
+            ConsoleUIUtil.printCenteredMenuOption(0, "Cancel");
             System.out.print("Choose new status: ");
             int statusChoice = Integer.parseInt(scanner.nextLine());
             if (statusChoice == 0) {
@@ -426,7 +425,7 @@ public class RegistrarView {
                 System.out.println("No course sections are available for the active period.");
                 return;
             }
-            System.out.println("\n--- AVAILABLE COURSE SECTIONS ---");
+            ConsoleUIUtil.printBoxedSectionHeader("AVAILABLE COURSE SECTIONS");
             System.out.printf("%-10s %-12s %-28s %-12s %-16s %-12s %-12s%n",
                     "Section", "Course", "Title", "Schedule", "Time", "Capacity", "Enrolled");
             for (CourseSection section : sections) {
@@ -443,7 +442,7 @@ public class RegistrarView {
             System.out.println(enrollmentController.enrollStudent(studentId, sectionId)
                     ? "Student enrolled with pending status." : "Student could not be enrolled.");
         } catch (NumberFormatException ex) {
-            System.out.println("Invalid enrollment input.");
+            ConsoleUIUtil.printError("Invalid enrollment input.");
         }
     }
 
@@ -497,14 +496,14 @@ public class RegistrarView {
                 System.out.println("Student not found.");
                 return;
             }
-            System.out.println("\n===== OFFICIAL TRANSCRIPT =====");
+            ConsoleUIUtil.printBoxedSectionHeader("OFFICIAL TRANSCRIPT");
             System.out.println(student.getFirstName() + " " + student.getLastName() + " (Student " + studentId + ")");
             for (Enrollment enrollment : enrollmentController.getStudentEnrollments(studentId)) {
                 System.out.printf("Section %d | Status %s | Grade %s | GPA %s%n", enrollment.getSectionId(),
                         enrollment.getRegistrationStatus(), value(enrollment.getFinalGrade()),
                         enrollment.getGpaPoints() == null ? "N/A" : enrollment.getGpaPoints());
             }
-            System.out.println("===============================");
+            ConsoleUIUtil.printDivider("=");
         } catch (NumberFormatException ex) {
             System.out.println("Invalid student ID.");
         }
@@ -528,7 +527,7 @@ public class RegistrarView {
             System.out.println(transcriptController.updateRequestStatus(requestId, status, user.getUserId())
                     ? "Transcript request updated." : "Transcript request could not be updated.");
         } catch (NumberFormatException ex) {
-            System.out.println("Invalid request ID.");
+            ConsoleUIUtil.printError("Invalid request ID.");
         }
     }
 

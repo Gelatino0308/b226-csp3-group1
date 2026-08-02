@@ -14,6 +14,7 @@ import com.joysistvi.sigsys.model.Faculty;
 import com.joysistvi.sigsys.model.GradeDetail;
 import com.joysistvi.sigsys.model.Student;
 import com.joysistvi.sigsys.model.User;
+import com.joysistvi.sigsys.util.ConsoleUIUtil;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -41,16 +42,14 @@ public class FacultyView {
     public void showMenu() {
         boolean active = true;
         while (active) {
-            System.out.println("\n=================================");
-            System.out.println("        FACULTY DASHBOARD        ");
-            System.out.println("=================================");
-            System.out.println("[1] View Assigned Courses & Rosters");
-            System.out.println("[2] View Students by Course and Section");
-            System.out.println("[3] Input Attendance");
-            System.out.println("[4] Input Marks");
-            System.out.println("[5] Update Student Marks");
-            System.out.println("[6] Calculate and Submit Final Grade");
-            System.out.println("[7] Logout");
+            ConsoleUIUtil.printBoxedSectionHeader("FACULTY DASHBOARD");
+            ConsoleUIUtil.printCenteredMenuOption(1, "View Assigned Courses & Rosters");
+            ConsoleUIUtil.printCenteredMenuOption(2, "View Students by Course and Section");
+            ConsoleUIUtil.printCenteredMenuOption(3, "Input Attendance");
+            ConsoleUIUtil.printCenteredMenuOption(4, "Input Marks");
+            ConsoleUIUtil.printCenteredMenuOption(5, "Update Student Marks");
+            ConsoleUIUtil.printCenteredMenuOption(6, "Calculate and Submit Final Grade");
+            ConsoleUIUtil.printCenteredMenuOption(7, "Logout");
             System.out.print("Choose option: ");
             switch (scanner.nextLine()) {
                 case "1" -> showAssignedCourses();
@@ -59,15 +58,15 @@ public class FacultyView {
                 case "4", "5" -> inputMarks();
                 case "6" -> calculateAndSubmitGrade();
                 case "7" -> active = false;
-                default -> System.out.println("Invalid option.");
+                default -> ConsoleUIUtil.printError("Invalid option.");
             }
         }
     }
 
     private void showStudentsByCourseAndSection() {
         try {
-            System.out.println("[1] Search by Course");
-            System.out.println("[2] Search by Section");
+            ConsoleUIUtil.printCenteredMenuOption(1, "Search by Course");
+            ConsoleUIUtil.printCenteredMenuOption(2, "Search by Section");
             System.out.print("Choose search type: ");
             int searchType = Integer.parseInt(scanner.nextLine());
             Course course;
@@ -86,7 +85,7 @@ public class FacultyView {
                     System.out.println("No sections are available for this course.");
                     return;
                 }
-                System.out.println("\n--- SECTIONS FOR " + course.getCourseCode() + " ---");
+                ConsoleUIUtil.printBoxedSectionHeader("SECTIONS FOR " + course.getCourseCode());
                 for (CourseSection availableSection : sections) {
                     System.out.printf("Section ID: %d | Schedule: %s %s | Room: %s%n",
                             availableSection.getSectionId(), availableSection.getScheduleDays(),
@@ -118,11 +117,11 @@ public class FacultyView {
                     System.out.println("No course is assigned to this section.");
                     return;
                 }
-                System.out.println("\n--- COURSES IN SECTION " + sectionId + " ---");
-                System.out.println("[1] " + course.getCourseCode() + " - " + course.getCourseTitle());
+                ConsoleUIUtil.printBoxedSectionHeader("COURSES IN SECTION " + sectionId);
+                ConsoleUIUtil.printCenteredMenuOption(1, course.getCourseCode() + " - " + course.getCourseTitle());
                 System.out.print("Choose course: ");
                 if (Integer.parseInt(scanner.nextLine()) != 1) {
-                    System.out.println("Invalid course choice.");
+                    ConsoleUIUtil.printError("Invalid course choice.");
                     return;
                 }
             } else {
@@ -130,8 +129,8 @@ public class FacultyView {
                 return;
             }
             List<Enrollment> enrollments = enrollmentController.getSectionEnrollments(section.getSectionId());
-            System.out.println("\n--- STUDENTS IN " + course.getCourseCode() + " - "
-                    + course.getCourseTitle() + " | SECTION " + section.getSectionId() + " ---");
+            ConsoleUIUtil.printBoxedSectionHeader("STUDENTS IN " + course.getCourseCode() + " - "
+                    + course.getCourseTitle() + " | SECTION " + section.getSectionId());
             if (enrollments.isEmpty()) {
                 System.out.println("No students are enrolled in this section.");
                 return;
@@ -161,16 +160,18 @@ public class FacultyView {
             return;
         }
         System.out.println("\nFaculty: " + faculty.getFirstName() + " " + faculty.getLastName());
-        System.out.println("\n--- ASSIGNED COURSES AND ROSTERS ---");
+        ConsoleUIUtil.printBoxedSectionHeader("ASSIGNED COURSES AND ROSTERS");
         for (CourseSection section : sections) {
             Course course = courseController.getCourseById(section.getCourseId());
             if (course == null) continue;
-            System.out.printf("\nSection ID: %d%n", section.getSectionId());
+            ConsoleUIUtil.printDivider("=");
+            System.out.printf("Section ID: %d%n", section.getSectionId());
             System.out.printf("Course: %s%n", course.getCourseCode());
             System.out.printf("Title: %s%n", course.getCourseTitle());
             System.out.printf("Schedule: %s%n", section.getScheduleDays());
             System.out.printf("Time: %s%n", section.getScheduleTime());
             System.out.printf("Room: %s%n", section.getRoom());
+            ConsoleUIUtil.printDivider("-");
             System.out.println("Roster:");
             System.out.printf("%-12s %-25s %-22s%n", "Student ID", "Student Name", "Enrolled At");
             for (Enrollment enrollment : enrollmentController.getSectionEnrollments(section.getSectionId())) {
@@ -181,6 +182,7 @@ public class FacultyView {
                             enrollment.getEnrolledAt() == null ? "--" : enrollment.getEnrolledAt());
                 }
             }
+            ConsoleUIUtil.printDivider("=");
         }
     }
 
@@ -203,7 +205,7 @@ public class FacultyView {
                 return;
             }
             if (!isAssignedSection(section)) return;
-            System.out.println("\n--- SELECTED ATTENDANCE RECORD ---");
+            ConsoleUIUtil.printBoxedSectionHeader("SELECTED ATTENDANCE RECORD");
             System.out.println("Student: " + student.getFirstName() + " " + student.getLastName()
                     + " (ID: " + student.getStudentId() + ")");
             System.out.println("Section: " + section.getSectionId());
@@ -245,8 +247,8 @@ public class FacultyView {
                 return;
             }
 
-            System.out.println("\n--- AVAILABLE SUBJECTS FOR SECTION " + sectionId + " ---");
-            System.out.println("[1] " + course.getCourseCode() + " - " + course.getCourseTitle());
+            ConsoleUIUtil.printBoxedSectionHeader("AVAILABLE SUBJECTS FOR SECTION " + sectionId);
+            ConsoleUIUtil.printCenteredMenuOption(1, course.getCourseCode() + " - " + course.getCourseTitle());
             System.out.print("Choose subject: ");
             int subjectChoice = Integer.parseInt(scanner.nextLine());
             if (subjectChoice != 1) {
@@ -259,10 +261,10 @@ public class FacultyView {
                 System.out.println("No students are enrolled in this subject and section.");
                 return;
             }
-            System.out.println("\n--- STUDENTS ENROLLED IN " + course.getCourseCode() + " ---");
+            ConsoleUIUtil.printBoxedSectionHeader("STUDENTS ENROLLED IN " + course.getCourseCode());
             System.out.printf("%-12s %-25s %-15s %-15s %-15s%n",
                     "Student ID", "Student Name", "Prelim", "Midterm", "Finals");
-            System.out.println("--------------------------------------------------------------------------");
+            ConsoleUIUtil.printDivider("=");
             for (Enrollment item : enrollments) {
                 Student enrolledStudent = studentController.getStudentById(item.getStudentId());
                 if (enrolledStudent != null) {
@@ -295,7 +297,7 @@ public class FacultyView {
                 return;
             }
 
-            System.out.println("\n--- SELECTED MARK RECORD ---");
+            ConsoleUIUtil.printBoxedSectionHeader("SELECTED MARK RECORD");
             System.out.println("Student: " + student.getFirstName() + " " + student.getLastName()
                     + " (ID: " + student.getStudentId() + ")");
             System.out.println("Section: " + section.getSectionId());
@@ -306,9 +308,9 @@ public class FacultyView {
                 return;
             }
             int enrollmentId = enrollment.getEnrollmentId();
-            System.out.println("[1] PRELIM");
-            System.out.println("[2] MIDTERM");
-            System.out.println("[3] FINALS");
+            ConsoleUIUtil.printCenteredMenuOption(1, "PRELIM");
+            ConsoleUIUtil.printCenteredMenuOption(2, "MIDTERM");
+            ConsoleUIUtil.printCenteredMenuOption(3, "FINALS");
             System.out.print("Choose term: ");
             int termChoice = Integer.parseInt(scanner.nextLine());
             String term;
@@ -359,7 +361,7 @@ public class FacultyView {
                 return;
             }
             if (!isAssignedSection(section)) return;
-            System.out.println("\n--- SELECTED FINAL-GRADE RECORD ---");
+            ConsoleUIUtil.printBoxedSectionHeader("SELECTED FINAL-GRADE RECORD");
             System.out.println("Student: " + student.getFirstName() + " " + student.getLastName()
                     + " (ID: " + student.getStudentId() + ")");
             System.out.println("Section: " + section.getSectionId());

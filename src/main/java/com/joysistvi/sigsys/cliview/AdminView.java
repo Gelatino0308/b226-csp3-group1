@@ -4,12 +4,12 @@ import com.joysistvi.sigsys.controller.SystemConfigController;
 import com.joysistvi.sigsys.controller.FacultyController;
 import com.joysistvi.sigsys.controller.StudentController;
 import com.joysistvi.sigsys.model.Faculty;
-import com.joysistvi.sigsys.model.Student;
 import com.joysistvi.sigsys.controller.UserController;
 import com.joysistvi.sigsys.model.User;
 import com.joysistvi.sigsys.model.OverloadRequest;
 import com.joysistvi.sigsys.model.SystemConfig;
 import com.joysistvi.sigsys.controller.OverloadRequestController;
+import com.joysistvi.sigsys.util.ConsoleUIUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -38,14 +38,12 @@ public class AdminView {
     public void showMenu() {
         boolean active = true;
         while (active) {
-            System.out.println("\n=================================");
-            System.out.println("         ADMIN DASHBOARD         ");
-            System.out.println("=================================");
-            System.out.println("[1] Create New User Account");
-            System.out.println("[2] Manage Users");
-            System.out.println("[3] Manage System Configuration");
-            System.out.println("[4] Maintain Security (Change Password)");
-            System.out.println("[5] Logout");
+            ConsoleUIUtil.printBoxedSectionHeader("ADMIN DASHBOARD");
+            ConsoleUIUtil.printCenteredMenuOption(1, "Create New User Account");
+            ConsoleUIUtil.printCenteredMenuOption(2, "Manage Users");
+            ConsoleUIUtil.printCenteredMenuOption(3, "Manage System Configuration");
+            ConsoleUIUtil.printCenteredMenuOption(4, "Maintain Security (Change Password)");
+            ConsoleUIUtil.printCenteredMenuOption(5, "Logout");
             System.out.print("Choose option: ");
 
             String choice = scanner.nextLine();
@@ -58,13 +56,13 @@ public class AdminView {
                     System.out.println("Logging out from Admin panel...");
                     active = false;
                 }
-                default -> System.out.println("Invalid option. Please try again.");
+                default -> ConsoleUIUtil.printError("Invalid option. Please try again.");
             }
         }
     }
 
     private void createNewUser() {
-        System.out.println("\n--- CREATE USER ACCOUNT ---");
+        ConsoleUIUtil.printBoxedSectionHeader("CREATE USER ACCOUNT");
         System.out.print("Enter Username: ");
         String username = scanner.nextLine();
 
@@ -127,7 +125,7 @@ public class AdminView {
     }
 
     private void updateConfig() {
-        System.out.println("\n--- UPDATE SYSTEM CONFIG ---");
+        ConsoleUIUtil.printBoxedSectionHeader("UPDATE SYSTEM CONFIG");
         System.out.print("Setting Key (e.g., MAX_CREDITS_PER_TERM): ");
         String key = scanner.nextLine();
 
@@ -142,17 +140,17 @@ public class AdminView {
     }
 
     private void manageConfiguration() {
-        System.out.println("[1] Set Maximum Units");
-        System.out.println("[2] Set Class Conflict Rule");
-        System.out.println("[3] View All Settings");
-        System.out.println("[4] Review Overload Requests");
+        ConsoleUIUtil.printCenteredMenuOption(1, "Set Maximum Units");
+        ConsoleUIUtil.printCenteredMenuOption(2, "Set Class Conflict Rule");
+        ConsoleUIUtil.printCenteredMenuOption(3, "View All Settings");
+        ConsoleUIUtil.printCenteredMenuOption(4, "Review Overload Requests");
         System.out.print("Choose option: ");
         switch (scanner.nextLine()) {
             case "1" -> updateMaximumUnits();
             case "2" -> updateClassConflictRule();
             case "3" -> viewAllConfigs();
             case "4" -> reviewOverloadRequests();
-            default -> System.out.println("Invalid option.");
+            default -> ConsoleUIUtil.printError("Invalid option.");
         }
     }
 
@@ -186,7 +184,7 @@ public class AdminView {
 
     private void reviewOverloadRequests() {
         List<OverloadRequest> requests = overloadController.getPendingRequests();
-        System.out.println("\n--- PENDING OVERLOAD REQUESTS ---");
+        ConsoleUIUtil.printBoxedSectionHeader("PENDING OVERLOAD REQUESTS");
         if (requests.isEmpty()) {
             System.out.println("No pending overload requests.");
             return;
@@ -204,27 +202,27 @@ public class AdminView {
             String decision = scanner.nextLine().trim().toUpperCase();
             String status = "A".equals(decision) ? "APPROVED" : "D".equals(decision) ? "DISAPPROVED" : "";
             if (status.isEmpty()) {
-                System.out.println("Invalid decision.");
+                ConsoleUIUtil.printError("Invalid decision.");
                 return;
             }
             System.out.println(overloadController.review(requestId, status, user.getUserId())
                     ? "Overload request " + status.toLowerCase() + "."
                     : "Overload request could not be reviewed.");
         } catch (NumberFormatException exception) {
-            System.out.println("Invalid request ID.");
+            ConsoleUIUtil.printError("Invalid request ID.");
         }
     }
 
     private void manageUsers() {
         boolean viewing = true;
         while (viewing) {
-            System.out.println("\n--- MANAGE USERS ---");
-            System.out.println("[1] Manage Students");
-            System.out.println("[2] Manage Faculties");
-            System.out.println("[3] Manage Registrars");
-            System.out.println("[4] Manage Admins");
-            System.out.println("[5] Manage All Roles");
-            System.out.println("[6] Back");
+            ConsoleUIUtil.printBoxedSectionHeader("MANAGE USERS");
+            ConsoleUIUtil.printCenteredMenuOption(1, "Manage Students");
+            ConsoleUIUtil.printCenteredMenuOption(2, "Manage Faculties");
+            ConsoleUIUtil.printCenteredMenuOption(3, "Manage Registrars");
+            ConsoleUIUtil.printCenteredMenuOption(4, "Manage Admins");
+            ConsoleUIUtil.printCenteredMenuOption(5, "Manage All Roles");
+            ConsoleUIUtil.printCenteredMenuOption(6, "Back");
             System.out.print("Choose option: ");
             switch (scanner.nextLine()) {
                 case "1" -> manageUsersByRole("STUDENT", "STUDENTS");
@@ -233,7 +231,7 @@ public class AdminView {
                 case "4" -> manageUsersByRole("ADMIN", "ADMINS");
                 case "5" -> manageAllUsers();
                 case "6" -> viewing = false;
-                default -> System.out.println("Invalid option.");
+                default -> ConsoleUIUtil.printError("Invalid option.");
             }
         }
     }
@@ -250,9 +248,9 @@ public class AdminView {
 
     private void showUsersByRole(String role, String title) {
         List<User> users = userController.getAllUsers();
-        System.out.println("\n================ " + title + " ================");
+        ConsoleUIUtil.printBoxedSectionHeader(title);
         System.out.printf("%-8s %-20s %-32s %-8s%n", "ID", "USERNAME", "EMAIL", "ACTIVE");
-        System.out.println("--------------------------------------------------------------------------");
+        ConsoleUIUtil.printDivider("=");
         boolean found = false;
         for (User account : users) {
             if (role.equalsIgnoreCase(account.getRole())) {
@@ -262,7 +260,7 @@ public class AdminView {
             }
         }
         if (!found) System.out.println("No users found for this role.");
-        System.out.println("--------------------------------------------------------------------------");
+        ConsoleUIUtil.printDivider("=");
     }
 
     private void showAllUsersByRole() {
@@ -273,7 +271,7 @@ public class AdminView {
     }
 
     private void manageAccount(String requiredRole) {
-        System.out.println("\n--- ACCOUNT MANAGEMENT ---");
+        ConsoleUIUtil.printBoxedSectionHeader("ACCOUNT MANAGEMENT");
         System.out.print("Enter User ID (0 to cancel): ");
         int userId;
         try {
@@ -290,11 +288,11 @@ public class AdminView {
             return;
         }
 
-        System.out.println("[1] Update Email and Role");
-        System.out.println("[2] " + (account.isActive() ? "Deactivate" : "Activate") + " Account");
-        System.out.println("[3] Reset Password");
-        System.out.println("[4] Delete Account");
-        System.out.println("[5] Cancel");
+        ConsoleUIUtil.printCenteredMenuOption(1, "Update Email and Role");
+        ConsoleUIUtil.printCenteredMenuOption(2, account.isActive() ? "Deactivate Account" : "Activate Account");
+        ConsoleUIUtil.printCenteredMenuOption(3, "Reset Password");
+        ConsoleUIUtil.printCenteredMenuOption(4, "Delete Account");
+        ConsoleUIUtil.printCenteredMenuOption(5, "Cancel");
         System.out.print("Choose action: ");
         String action = scanner.nextLine();
 
@@ -315,7 +313,7 @@ public class AdminView {
             }
             case "4" -> deleteAccount(account);
             case "5" -> System.out.println("Account action cancelled.");
-            default -> System.out.println("Invalid action.");
+            default -> ConsoleUIUtil.printError("Invalid action.");
         }
     }
 
@@ -329,7 +327,7 @@ public class AdminView {
         String role = scanner.nextLine().trim().toUpperCase();
         if (!role.isEmpty()) {
             if (!role.matches("STUDENT|FACULTY|REGISTRAR|ADMIN")) {
-                System.out.println("Invalid role. Account was not updated.");
+                ConsoleUIUtil.printError("Invalid role. Account was not updated.");
                 return;
             }
             account.setRole(role);
@@ -362,7 +360,7 @@ public class AdminView {
     }
 
     private void viewConfig() {
-        System.out.println("\n--- VIEW SYSTEM CONFIG ---");
+        ConsoleUIUtil.printBoxedSectionHeader("VIEW SYSTEM CONFIG");
         System.out.print("Setting Key: ");
         String key = scanner.nextLine();
 
@@ -375,7 +373,7 @@ public class AdminView {
     }
 
     private void viewAllConfigs() {
-        System.out.println("\n--- SYSTEM CONFIGURATION ---");
+        ConsoleUIUtil.printBoxedSectionHeader("SYSTEM CONFIGURATION");
         List<SystemConfig> configs = configController.getAllConfigs();
         boolean hasConflictSetting = false;
         for (SystemConfig config : configs) {

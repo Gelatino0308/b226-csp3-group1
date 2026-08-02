@@ -15,6 +15,7 @@ import com.joysistvi.sigsys.model.Enrollment;
 import com.joysistvi.sigsys.model.GradeDetail;
 import com.joysistvi.sigsys.model.Student;
 import com.joysistvi.sigsys.model.User;
+import com.joysistvi.sigsys.util.ConsoleUIUtil;
 
 import java.util.List;
 import java.util.HashMap;
@@ -46,17 +47,15 @@ public class StudentView {
         }
         boolean active = true;
         while (active) {
-            System.out.println("\n=================================");
-            System.out.println("       STUDENT DASHBOARD         ");
-            System.out.println("=================================");
-            System.out.println("[1] View Personal Information");
-            System.out.println("[2] View Enrolled Courses");
-            System.out.println("[3] View Course Schedule");
-            System.out.println("[4] View Final Grades & GPA");
-            System.out.println("[5] Request Overload Units");
-            System.out.println("[6] View Official Transcript");
-            System.out.println("[7] Request Academic Transcript");
-            System.out.println("[8] Logout");
+            ConsoleUIUtil.printBoxedSectionHeader("STUDENT DASHBOARD");
+            ConsoleUIUtil.printCenteredMenuOption(1, "View Personal Information");
+            ConsoleUIUtil.printCenteredMenuOption(2, "View Enrolled Courses");
+            ConsoleUIUtil.printCenteredMenuOption(3, "View Course Schedule");
+            ConsoleUIUtil.printCenteredMenuOption(4, "View Final Grades & GPA");
+            ConsoleUIUtil.printCenteredMenuOption(5, "Request Overload Units");
+            ConsoleUIUtil.printCenteredMenuOption(6, "View Official Transcript");
+            ConsoleUIUtil.printCenteredMenuOption(7, "Request Academic Transcript");
+            ConsoleUIUtil.printCenteredMenuOption(8, "Logout");
             System.out.print("Choose option: ");
             switch (scanner.nextLine()) {
                 case "1" -> showPersonalInformation(student);
@@ -67,14 +66,14 @@ public class StudentView {
                 case "6" -> viewOfficialTranscript(student);
                 case "7" -> requestTranscript(student.getStudentId());
                 case "8" -> active = false;
-                default -> System.out.println("Invalid option.");
+                default -> ConsoleUIUtil.printError("Invalid option.");
             }
         }
     }
 
     private void showEnrolledCourses(int studentId) {
         List<Enrollment> enrollments = enrollmentController.getStudentEnrollments(studentId);
-        System.out.println("\n--- MY ENROLLED COURSES ---");
+        ConsoleUIUtil.printBoxedSectionHeader("MY ENROLLED COURSES");
         if (enrollments.isEmpty()) {
             System.out.println("You are not enrolled in any courses.");
             return;
@@ -95,7 +94,7 @@ public class StudentView {
     }
 
     private void showPersonalInformation(Student student) {
-        System.out.println("\n--- PERSONAL INFORMATION ---");
+        ConsoleUIUtil.printBoxedSectionHeader("PERSONAL INFORMATION");
         System.out.println("Student ID: " + student.getStudentId());
         System.out.println("Name: " + student.getFirstName() + " " + student.getLastName());
         System.out.println("Date of Birth: " + value(student.getDob()));
@@ -159,7 +158,7 @@ public class StudentView {
             }
         }
         sections.removeIf(section -> !enrolledSectionIds.contains(section.getSectionId()));
-        System.out.println("\n--- COURSE SCHEDULE: " + period.getTermName() + " ---");
+        ConsoleUIUtil.printBoxedSectionHeader("COURSE SCHEDULE: " + period.getTermName());
         printSections(sections);
     }
 
@@ -167,7 +166,7 @@ public class StudentView {
         List<Enrollment> enrollments = enrollmentController.getStudentEnrollments(student.getStudentId());
         double total = 0;
         int graded = 0;
-        System.out.println("\n--- FINAL GRADES & GPA ---");
+        ConsoleUIUtil.printBoxedSectionHeader("FINAL GRADES & GPA");
         for (Enrollment enrollment : enrollments) {
             if (enrollment.getGpaPoints() != null) {
                 total += enrollment.getGpaPoints();
@@ -223,7 +222,7 @@ public class StudentView {
             return;
         }
 
-        System.out.println("\n===== OFFICIAL TRANSCRIPT RECORD =====");
+        ConsoleUIUtil.printBoxedSectionHeader("OFFICIAL TRANSCRIPT RECORD");
         System.out.println(student.getFirstName() + " " + student.getLastName()
                 + " (Student " + student.getStudentId() + ")");
         System.out.printf("%-12s %-28s %-12s %-10s %-10s%n",
@@ -240,7 +239,7 @@ public class StudentView {
                         enrollment.getGpaPoints() == null ? "N/A" : enrollment.getGpaPoints());
             }
         }
-        System.out.println("======================================");
+        ConsoleUIUtil.printDivider("=");
     }
 
     private void printSections(List<CourseSection> sections) {
