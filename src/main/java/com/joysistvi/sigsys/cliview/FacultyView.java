@@ -1,6 +1,5 @@
 package com.joysistvi.sigsys.cliview;
 
-import com.joysistvi.sigsys.controller.AttendanceController;
 import com.joysistvi.sigsys.controller.CourseSectionController;
 import com.joysistvi.sigsys.controller.CourseController;
 import com.joysistvi.sigsys.controller.EnrollmentController;
@@ -16,8 +15,6 @@ import com.joysistvi.sigsys.model.Student;
 import com.joysistvi.sigsys.model.User;
 import com.joysistvi.sigsys.util.ConsoleUIUtil;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +28,6 @@ public class FacultyView {
     private final CourseController courseController = new CourseController();
     private final EnrollmentController enrollmentController = new EnrollmentController();
     private final GradeDetailsController gradeController = new GradeDetailsController();
-    private final AttendanceController attendanceController = new AttendanceController();
     private final StudentController studentController = new StudentController();
 
     public FacultyView(User user, Scanner scanner) {
@@ -42,6 +38,7 @@ public class FacultyView {
     public void showMenu() {
         boolean active = true;
         while (active) {
+            ConsoleUIUtil.clearAndPrintHeader("FACULTY DASHBOARD");
             ConsoleUIUtil.printBoxedSectionHeader("FACULTY DASHBOARD");
             ConsoleUIUtil.printCenteredMenuOption(1, "View Assigned Courses & Rosters");
             ConsoleUIUtil.printCenteredMenuOption(2, "View Students by Course and Section");
@@ -58,12 +55,17 @@ public class FacultyView {
                 case "4", "5" -> inputMarks();
                 case "6" -> calculateAndSubmitGrade();
                 case "7" -> active = false;
-                default -> ConsoleUIUtil.printError("Invalid option.");
+                default -> {
+                    ConsoleUIUtil.printError("Invalid option.");
+                    pause();
+                }
             }
         }
     }
 
     private void showStudentsByCourseAndSection() {
+        ConsoleUIUtil.clearAndPrintHeader("STUDENTS BY COURSE AND SECTION");
+        ConsoleUIUtil.printBoxedSectionHeader("STUDENTS BY COURSE AND SECTION");
         try {
             ConsoleUIUtil.printCenteredMenuOption(1, "Search by Course");
             ConsoleUIUtil.printCenteredMenuOption(2, "Search by Section");
@@ -78,19 +80,26 @@ public class FacultyView {
                 course = courseController.getCourseByCode(courseCode);
                 if (course == null) {
                     System.out.println("No course found with code " + courseCode + ".");
+                    pause();
                     return;
                 }
                 List<CourseSection> sections = sectionController.getSectionsByCourse(course.getCourseId());
                 if (sections.isEmpty()) {
                     System.out.println("No sections are available for this course.");
+                    pause();
                     return;
                 }
                 ConsoleUIUtil.printBoxedSectionHeader("SECTIONS FOR " + course.getCourseCode());
+                int[] widths = {12, 22, 18, 15};
+                ConsoleUIUtil.printTableHeader(widths, "SECTION ID", "SCHEDULE DAYS", "SCHEDULE TIME", "ROOM");
                 for (CourseSection availableSection : sections) {
-                    System.out.printf("Section ID: %d | Schedule: %s %s | Room: %s%n",
-                            availableSection.getSectionId(), availableSection.getScheduleDays(),
-                            availableSection.getScheduleTime(), availableSection.getRoom());
+                    ConsoleUIUtil.printTableRow(widths,
+                            String.valueOf(availableSection.getSectionId()),
+                            String.valueOf(availableSection.getScheduleDays()),
+                            String.valueOf(availableSection.getScheduleTime()),
+                            String.valueOf(availableSection.getRoom()));
                 }
+                ConsoleUIUtil.printTableFooter(widths);
                 System.out.print("Enter Section ID: ");
                 int sectionId = Integer.parseInt(scanner.nextLine());
                 section = null;
@@ -102,6 +111,7 @@ public class FacultyView {
                 }
                 if (section == null) {
                     System.out.println("That section does not belong to the selected course.");
+                    pause();
                     return;
                 }
             } else if (searchType == 2) {
@@ -110,11 +120,13 @@ public class FacultyView {
                 section = sectionController.getSectionById(sectionId);
                 if (section == null) {
                     System.out.println("No section found with ID " + sectionId + ".");
+                    pause();
                     return;
                 }
                 course = courseController.getCourseById(section.getCourseId());
                 if (course == null) {
                     System.out.println("No course is assigned to this section.");
+                    pause();
                     return;
                 }
                 ConsoleUIUtil.printBoxedSectionHeader("COURSES IN SECTION " + sectionId);
@@ -122,71 +134,97 @@ public class FacultyView {
                 System.out.print("Choose course: ");
                 if (Integer.parseInt(scanner.nextLine()) != 1) {
                     ConsoleUIUtil.printError("Invalid course choice.");
+                    pause();
                     return;
                 }
             } else {
                 System.out.println("Invalid search type.");
+                pause();
                 return;
             }
+
             List<Enrollment> enrollments = enrollmentController.getSectionEnrollments(section.getSectionId());
             ConsoleUIUtil.printBoxedSectionHeader("STUDENTS IN " + course.getCourseCode() + " - "
                     + course.getCourseTitle() + " | SECTION " + section.getSectionId());
             if (enrollments.isEmpty()) {
                 System.out.println("No students are enrolled in this section.");
+                pause();
                 return;
             }
+            int[] widths = {12, 25, 16, 15};
+            ConsoleUIUtil.printTableHeader(widths, "STUDENT ID", "STUDENT NAME", "ENROLLMENT ID", "STATUS");
             for (Enrollment enrollment : enrollments) {
                 Student student = studentController.getStudentById(enrollment.getStudentId());
                 if (student != null) {
-                    System.out.printf("Student ID: %d | Name: %s %s | Enrollment: %d | Status: %s%n",
-                            student.getStudentId(), student.getFirstName(), student.getLastName(),
-                            enrollment.getEnrollmentId(), enrollment.getRegistrationStatus());
+                    ConsoleUIUtil.printTableRow(widths,
+                            String.valueOf(student.getStudentId()),
+                            student.getFirstName() + " " + student.getLastName(),
+                            String.valueOf(enrollment.getEnrollmentId()),
+                            String.valueOf(enrollment.getRegistrationStatus()));
                 }
             }
+            ConsoleUIUtil.printTableFooter(widths);
+            pause();
         } catch (NumberFormatException ex) {
             System.out.println("Invalid course or section ID.");
+            pause();
         }
     }
 
     private void showAssignedCourses() {
+        ConsoleUIUtil.clearAndPrintHeader("ASSIGNED COURSES AND ROSTERS");
+        ConsoleUIUtil.printBoxedSectionHeader("ASSIGNED COURSES AND ROSTERS");
         Faculty faculty = facultyController.getFacultyByUserId(user.getUserId());
         if (faculty == null) {
             System.out.println("No faculty profile found.");
+            pause();
             return;
         }
         List<CourseSection> sections = sectionController.getSectionsByFaculty(faculty.getFacultyId());
         if (sections.isEmpty()) {
             System.out.println("No assigned course sections found.");
+            pause();
             return;
         }
         System.out.println("\nFaculty: " + faculty.getFirstName() + " " + faculty.getLastName());
-        ConsoleUIUtil.printBoxedSectionHeader("ASSIGNED COURSES AND ROSTERS");
+        int[] sectionWidths = {12, 12, 30, 16, 16, 16};
+        ConsoleUIUtil.printTableHeader(sectionWidths, "SECTION ID", "COURSE", "TITLE", "DAYS", "TIME", "ROOM");
         for (CourseSection section : sections) {
             Course course = courseController.getCourseById(section.getCourseId());
             if (course == null) continue;
-            ConsoleUIUtil.printDivider("=");
-            System.out.printf("Section ID: %d%n", section.getSectionId());
-            System.out.printf("Course: %s%n", course.getCourseCode());
-            System.out.printf("Title: %s%n", course.getCourseTitle());
-            System.out.printf("Schedule: %s%n", section.getScheduleDays());
-            System.out.printf("Time: %s%n", section.getScheduleTime());
-            System.out.printf("Room: %s%n", section.getRoom());
-            ConsoleUIUtil.printDivider("-");
-            System.out.println("Roster:");
-            System.out.printf("%-12s %-25s %-22s%n", "Student ID", "Student Name", "Enrolled At");
+            ConsoleUIUtil.printTableRow(sectionWidths,
+                    String.valueOf(section.getSectionId()),
+                    String.valueOf(course.getCourseCode()),
+                    String.valueOf(course.getCourseTitle()),
+                    String.valueOf(section.getScheduleDays()),
+                    String.valueOf(section.getScheduleTime()),
+                    String.valueOf(section.getRoom()));
+        }
+        ConsoleUIUtil.printTableFooter(sectionWidths);
+
+        for (CourseSection section : sections) {
+            Course course = courseController.getCourseById(section.getCourseId());
+            if (course == null) continue;
+            ConsoleUIUtil.printBoxedSectionHeader("ROSTER FOR SECTION " + section.getSectionId() + " - " + course.getCourseCode());
+            int[] rosterWidths = {12, 25, 22};
+            ConsoleUIUtil.printTableHeader(rosterWidths, "STUDENT ID", "STUDENT NAME", "ENROLLED AT");
             for (Enrollment enrollment : enrollmentController.getSectionEnrollments(section.getSectionId())) {
                 Student student = studentController.getStudentById(enrollment.getStudentId());
                 if (student != null) {
-                    System.out.printf("%-12d %-25s %-22s%n", student.getStudentId(),
+                    ConsoleUIUtil.printTableRow(rosterWidths,
+                            String.valueOf(student.getStudentId()),
                             student.getFirstName() + " " + student.getLastName(),
-                            enrollment.getEnrolledAt() == null ? "--" : enrollment.getEnrolledAt());
+                            String.valueOf(enrollment.getEnrolledAt() == null ? "--" : enrollment.getEnrolledAt()));
                 }
             }
-            ConsoleUIUtil.printDivider("=");
+            ConsoleUIUtil.printTableFooter(rosterWidths);
         }
+        pause();
     }
 
     private void inputAttendance() {
+        ConsoleUIUtil.clearAndPrintHeader("INPUT ATTENDANCE");
+        ConsoleUIUtil.printBoxedSectionHeader("INPUT ATTENDANCE");
         try {
             System.out.print("Student ID: ");
             int studentId = Integer.parseInt(scanner.nextLine());
@@ -195,6 +233,7 @@ public class FacultyView {
             Course course = courseController.getCourseByCode(courseCode);
             if (course == null) {
                 System.out.println("No course found with code " + courseCode + ".");
+                pause();
                 return;
             }
             Enrollment enrollment = enrollmentController.getEnrollmentByStudentAndCourse(studentId, course.getCourseId());
@@ -202,137 +241,161 @@ public class FacultyView {
             CourseSection section = enrollment == null ? null : sectionController.getSectionById(enrollment.getSectionId());
             if (enrollment == null || student == null || section == null) {
                 System.out.println("No enrollment found for this student and course.");
+                pause();
                 return;
             }
-            if (!isAssignedSection(section)) return;
-            ConsoleUIUtil.printBoxedSectionHeader("SELECTED ATTENDANCE RECORD");
-            System.out.println("Student: " + student.getFirstName() + " " + student.getLastName()
-                    + " (ID: " + student.getStudentId() + ")");
-            System.out.println("Section: " + section.getSectionId());
-            System.out.println("Subject: " + course.getCourseCode() + " - " + course.getCourseTitle());
-            System.out.print("Confirm this student and subject? (Y/N): ");
-            if (!scanner.nextLine().trim().equalsIgnoreCase("Y")) {
-                System.out.println("Attendance input cancelled.");
-                return;
-            }
-            System.out.print("Days attended: ");
-            int attendedDays = Integer.parseInt(scanner.nextLine());
-            System.out.print("Maximum attendance days: ");
-            int maxAttendance = Integer.parseInt(scanner.nextLine());
-            if (enrollmentController.updateAttendanceSummary(enrollment.getEnrollmentId(), attendedDays, maxAttendance)) {
-                System.out.println("Attendance summary saved: " + attendedDays + "/" + maxAttendance + " days.");
-                calculateAndSubmitGrade(enrollment.getEnrollmentId());
-            } else {
-                System.out.println("Attendance summary could not be saved. Check the enrollment and day counts.");
+            if (isAssignedSection(section)) {
+                ConsoleUIUtil.printBoxedSectionHeader("SELECTED ATTENDANCE RECORD");
+                int[] widths = {12, 25, 12, 30};
+                ConsoleUIUtil.printTableHeader(widths, "STUDENT ID", "STUDENT NAME", "SECTION", "SUBJECT");
+                ConsoleUIUtil.printTableRow(widths,
+                        String.valueOf(student.getStudentId()),
+                        student.getFirstName() + " " + student.getLastName(),
+                        String.valueOf(section.getSectionId()),
+                        course.getCourseCode() + " - " + course.getCourseTitle());
+                ConsoleUIUtil.printTableFooter(widths);
+                System.out.print("Confirm this student and subject? (Y/N): ");
+                if (!scanner.nextLine().trim().equalsIgnoreCase("Y")) {
+                    System.out.println("Attendance input cancelled.");
+                    pause();
+                    return;
+                }
+                System.out.print("Days attended: ");
+                int attendedDays = Integer.parseInt(scanner.nextLine());
+                System.out.print("Maximum attendance days: ");
+                int maxAttendance = Integer.parseInt(scanner.nextLine());
+                if (enrollmentController.updateAttendanceSummary(enrollment.getEnrollmentId(), attendedDays, maxAttendance)) {
+                    System.out.println("Attendance summary saved: " + attendedDays + "/" + maxAttendance + " days.");
+                    calculateAndSubmitGrade(enrollment.getEnrollmentId());
+                } else {
+                    System.out.println("Attendance summary could not be saved. Check the enrollment and day counts.");
+                    pause();
+                }
             }
         } catch (IllegalArgumentException ex) {
             System.out.println("Invalid attendance input.");
+            pause();
         }
     }
 
     private void inputMarks() {
+        ConsoleUIUtil.clearAndPrintHeader("INPUT MARKS");
+        ConsoleUIUtil.printBoxedSectionHeader("INPUT MARKS");
         try {
             System.out.print("Course Section ID: ");
             int sectionId = Integer.parseInt(scanner.nextLine());
             CourseSection section = sectionController.getSectionById(sectionId);
             if (section == null) {
                 System.out.println("No course section found with ID " + sectionId + ".");
+                pause();
                 return;
             }
-            if (!isAssignedSection(section)) return;
+            if (isAssignedSection(section)) {
+                Course course = courseController.getCourseById(section.getCourseId());
+                if (course == null) {
+                    System.out.println("No subject is assigned to this section.");
+                    pause();
+                    return;
+                }
 
-            Course course = courseController.getCourseById(section.getCourseId());
-            if (course == null) {
-                System.out.println("No subject is assigned to this section.");
-                return;
-            }
+                ConsoleUIUtil.printBoxedSectionHeader("AVAILABLE SUBJECTS FOR SECTION " + sectionId);
+                ConsoleUIUtil.printCenteredMenuOption(1, course.getCourseCode() + " - " + course.getCourseTitle());
+                System.out.print("Choose subject: ");
+                int subjectChoice = Integer.parseInt(scanner.nextLine());
+                if (subjectChoice != 1) {
+                    System.out.println("Invalid subject choice.");
+                    pause();
+                    return;
+                }
 
-            ConsoleUIUtil.printBoxedSectionHeader("AVAILABLE SUBJECTS FOR SECTION " + sectionId);
-            ConsoleUIUtil.printCenteredMenuOption(1, course.getCourseCode() + " - " + course.getCourseTitle());
-            System.out.print("Choose subject: ");
-            int subjectChoice = Integer.parseInt(scanner.nextLine());
-            if (subjectChoice != 1) {
-                System.out.println("Invalid subject choice.");
-                return;
-            }
-
-            List<Enrollment> enrollments = enrollmentController.getSectionEnrollments(sectionId);
-            if (enrollments.isEmpty()) {
-                System.out.println("No students are enrolled in this subject and section.");
-                return;
-            }
-            ConsoleUIUtil.printBoxedSectionHeader("STUDENTS ENROLLED IN " + course.getCourseCode());
-            System.out.printf("%-12s %-25s %-15s %-15s %-15s%n",
-                    "Student ID", "Student Name", "Prelim", "Midterm", "Finals");
-            ConsoleUIUtil.printDivider("=");
-            for (Enrollment item : enrollments) {
-                Student enrolledStudent = studentController.getStudentById(item.getStudentId());
-                if (enrolledStudent != null) {
-                    Map<String, GradeDetail> studentMarks = new HashMap<>();
-                    for (GradeDetail detail : gradeController.getGradesForEnrollment(item.getEnrollmentId())) {
-                        String term = detail.getAssessmentName() == null
-                                ? "" : detail.getAssessmentName().trim().toUpperCase();
-                        if (term.matches("PRELIM|MIDTERM|FINALS")) studentMarks.put(term, detail);
+                List<Enrollment> enrollments = enrollmentController.getSectionEnrollments(sectionId);
+                if (enrollments.isEmpty()) {
+                    System.out.println("No students are enrolled in this subject and section.");
+                    pause();
+                    return;
+                }
+                ConsoleUIUtil.printBoxedSectionHeader("STUDENTS ENROLLED IN " + course.getCourseCode());
+                int[] widths = {12, 25, 15, 15, 15};
+                ConsoleUIUtil.printTableHeader(widths, "STUDENT ID", "STUDENT NAME", "PRELIM", "MIDTERM", "FINALS");
+                for (Enrollment item : enrollments) {
+                    Student enrolledStudent = studentController.getStudentById(item.getStudentId());
+                    if (enrolledStudent != null) {
+                        Map<String, GradeDetail> studentMarks = new HashMap<>();
+                        for (GradeDetail detail : gradeController.getGradesForEnrollment(item.getEnrollmentId())) {
+                            String term = detail.getAssessmentName() == null
+                                    ? "" : detail.getAssessmentName().trim().toUpperCase();
+                            if (term.matches("PRELIM|MIDTERM|FINALS")) studentMarks.put(term, detail);
+                        }
+                        ConsoleUIUtil.printTableRow(widths,
+                                String.valueOf(enrolledStudent.getStudentId()),
+                                enrolledStudent.getFirstName() + " " + enrolledStudent.getLastName(),
+                                formatTermMark(studentMarks.get("PRELIM")),
+                                formatTermMark(studentMarks.get("MIDTERM")),
+                                formatTermMark(studentMarks.get("FINALS")));
                     }
-                    System.out.printf("%-12d %-25s %-15s %-15s %-15s%n",
-                            enrolledStudent.getStudentId(),
-                            enrolledStudent.getFirstName() + " " + enrolledStudent.getLastName(),
-                            formatTermMark(studentMarks.get("PRELIM")),
-                            formatTermMark(studentMarks.get("MIDTERM")),
-                            formatTermMark(studentMarks.get("FINALS")));
                 }
-            }
-            System.out.print("Enter Student ID: ");
-            int studentId = Integer.parseInt(scanner.nextLine());
-            Enrollment enrollment = null;
-            for (Enrollment item : enrollments) {
-                if (item.getStudentId() == studentId) {
-                    enrollment = item;
-                    break;
+                ConsoleUIUtil.printTableFooter(widths);
+                System.out.print("Enter Student ID: ");
+                int studentId = Integer.parseInt(scanner.nextLine());
+                Enrollment enrollment = null;
+                for (Enrollment item : enrollments) {
+                    if (item.getStudentId() == studentId) {
+                        enrollment = item;
+                        break;
+                    }
                 }
-            }
-            Student student = studentController.getStudentById(studentId);
-            if (enrollment == null || student == null) {
-                System.out.println("That student is not enrolled in the selected subject and section.");
-                return;
-            }
+                Student student = studentController.getStudentById(studentId);
+                if (enrollment == null || student == null) {
+                    System.out.println("That student is not enrolled in the selected subject and section.");
+                    pause();
+                    return;
+                }
 
-            ConsoleUIUtil.printBoxedSectionHeader("SELECTED MARK RECORD");
-            System.out.println("Student: " + student.getFirstName() + " " + student.getLastName()
-                    + " (ID: " + student.getStudentId() + ")");
-            System.out.println("Section: " + section.getSectionId());
-            System.out.println("Subject: " + course.getCourseCode() + " - " + course.getCourseTitle());
-            System.out.print("Confirm this student and subject? (Y/N): ");
-            if (!scanner.nextLine().trim().equalsIgnoreCase("Y")) {
-                System.out.println("Mark input cancelled.");
-                return;
-            }
-            int enrollmentId = enrollment.getEnrollmentId();
-            ConsoleUIUtil.printCenteredMenuOption(1, "PRELIM");
-            ConsoleUIUtil.printCenteredMenuOption(2, "MIDTERM");
-            ConsoleUIUtil.printCenteredMenuOption(3, "FINALS");
-            System.out.print("Choose term: ");
-            int termChoice = Integer.parseInt(scanner.nextLine());
-            String term;
-            if (termChoice == 1) term = "PRELIM";
-            else if (termChoice == 2) term = "MIDTERM";
-            else if (termChoice == 3) term = "FINALS";
-            else {
-                System.out.println("Invalid term choice.");
-                return;
-            }
-            System.out.print("Score obtained: ");
-            double score = Double.parseDouble(scanner.nextLine());
-            System.out.print("Maximum score: ");
-            double max = Double.parseDouble(scanner.nextLine());
-            if (gradeController.saveTermMark(enrollmentId, term, score, max)) {
-                System.out.println("Term mark saved. Each term contributes 33.33%.");
-                calculateAndSubmitGrade(enrollmentId);
-            } else {
-                System.out.println("Term mark could not be saved.");
+                ConsoleUIUtil.printBoxedSectionHeader("SELECTED MARK RECORD");
+                int[] selectedWidths = {12, 25, 12, 30};
+                ConsoleUIUtil.printTableHeader(selectedWidths, "STUDENT ID", "STUDENT NAME", "SECTION", "SUBJECT");
+                ConsoleUIUtil.printTableRow(selectedWidths,
+                        String.valueOf(student.getStudentId()),
+                        student.getFirstName() + " " + student.getLastName(),
+                        String.valueOf(section.getSectionId()),
+                        course.getCourseCode() + " - " + course.getCourseTitle());
+                ConsoleUIUtil.printTableFooter(selectedWidths);
+                System.out.print("Confirm this student and subject? (Y/N): ");
+                if (!scanner.nextLine().trim().equalsIgnoreCase("Y")) {
+                    System.out.println("Mark input cancelled.");
+                    pause();
+                    return;
+                }
+                int enrollmentId = enrollment.getEnrollmentId();
+                ConsoleUIUtil.printCenteredMenuOption(1, "PRELIM");
+                ConsoleUIUtil.printCenteredMenuOption(2, "MIDTERM");
+                ConsoleUIUtil.printCenteredMenuOption(3, "FINALS");
+                System.out.print("Choose term: ");
+                int termChoice = Integer.parseInt(scanner.nextLine());
+                String term;
+                if (termChoice == 1) term = "PRELIM";
+                else if (termChoice == 2) term = "MIDTERM";
+                else if (termChoice == 3) term = "FINALS";
+                else {
+                    System.out.println("Invalid term choice.");
+                    pause();
+                    return;
+                }
+                System.out.print("Score obtained: ");
+                double score = Double.parseDouble(scanner.nextLine());
+                System.out.print("Maximum score: ");
+                double max = Double.parseDouble(scanner.nextLine());
+                if (gradeController.saveTermMark(enrollmentId, term, score, max)) {
+                    System.out.println("Term mark saved. Each term contributes 33.33%.");
+                    calculateAndSubmitGrade(enrollmentId);
+                } else {
+                    System.out.println("Term mark could not be saved.");
+                    pause();
+                }
             }
         } catch (NumberFormatException ex) {
             System.out.println("Invalid marks input.");
+            pause();
         }
     }
 
@@ -343,6 +406,8 @@ public class FacultyView {
     }
 
     private void calculateAndSubmitGrade() {
+        ConsoleUIUtil.clearAndPrintHeader("CALCULATE FINAL GRADE");
+        ConsoleUIUtil.printBoxedSectionHeader("CALCULATE AND SUBMIT FINAL GRADE");
         try {
             System.out.print("Student ID: ");
             int studentId = Integer.parseInt(scanner.nextLine());
@@ -351,6 +416,7 @@ public class FacultyView {
             Course course = courseController.getCourseByCode(courseCode);
             if (course == null) {
                 System.out.println("No course found with code " + courseCode + ".");
+                pause();
                 return;
             }
             Enrollment enrollment = enrollmentController.getEnrollmentByStudentAndCourse(studentId, course.getCourseId());
@@ -358,22 +424,30 @@ public class FacultyView {
             CourseSection section = enrollment == null ? null : sectionController.getSectionById(enrollment.getSectionId());
             if (enrollment == null || student == null || section == null) {
                 System.out.println("No enrollment found for this student and course.");
+                pause();
                 return;
             }
-            if (!isAssignedSection(section)) return;
-            ConsoleUIUtil.printBoxedSectionHeader("SELECTED FINAL-GRADE RECORD");
-            System.out.println("Student: " + student.getFirstName() + " " + student.getLastName()
-                    + " (ID: " + student.getStudentId() + ")");
-            System.out.println("Section: " + section.getSectionId());
-            System.out.println("Subject: " + course.getCourseCode() + " - " + course.getCourseTitle());
-            System.out.print("Confirm this student and subject? (Y/N): ");
-            if (!scanner.nextLine().trim().equalsIgnoreCase("Y")) {
-                System.out.println("Final-grade calculation cancelled.");
-                return;
+            if (isAssignedSection(section)) {
+                ConsoleUIUtil.printBoxedSectionHeader("SELECTED FINAL-GRADE RECORD");
+                int[] widths = {12, 25, 12, 30};
+                ConsoleUIUtil.printTableHeader(widths, "STUDENT ID", "STUDENT NAME", "SECTION", "SUBJECT");
+                ConsoleUIUtil.printTableRow(widths,
+                        String.valueOf(student.getStudentId()),
+                        student.getFirstName() + " " + student.getLastName(),
+                        String.valueOf(section.getSectionId()),
+                        course.getCourseCode() + " - " + course.getCourseTitle());
+                ConsoleUIUtil.printTableFooter(widths);
+                System.out.print("Confirm this student and subject? (Y/N): ");
+                if (!scanner.nextLine().trim().equalsIgnoreCase("Y")) {
+                    System.out.println("Final-grade calculation cancelled.");
+                    pause();
+                    return;
+                }
+                calculateAndSubmitGrade(enrollment.getEnrollmentId());
             }
-            calculateAndSubmitGrade(enrollment.getEnrollmentId());
         } catch (NumberFormatException ex) {
             System.out.println("Invalid student ID.");
+            pause();
         }
     }
 
@@ -385,6 +459,7 @@ public class FacultyView {
         }
         if (!marks.keySet().containsAll(List.of("PRELIM", "MIDTERM", "FINALS"))) {
             System.out.println("Enter PRELIM, MIDTERM, and FINALS marks before calculating the final grade.");
+            pause();
             return;
         }
         double percentage = 0;
@@ -401,6 +476,7 @@ public class FacultyView {
         }
         if (currentEnrollment == null || currentEnrollment.getMaxAttendance() <= 0) {
             System.out.println("Enter the maximum attendance before calculating the final grade.");
+            pause();
             return;
         }
         percentage = percentage * 0.90
@@ -410,13 +486,17 @@ public class FacultyView {
         System.out.printf("Calculated result: %.2f%% = %s (GPA %.2f)%n", percentage, letterGrade, gpa);
         if (!enrollmentController.submitGrade(enrollmentId, letterGrade, gpa)) {
             System.out.println("The calculated grade could not be saved.");
+            pause();
+            return;
         }
+        pause();
     }
 
     private boolean isAssignedSection(CourseSection section) {
         Faculty faculty = facultyController.getFacultyByUserId(user.getUserId());
         if (faculty == null || faculty.getFacultyId() != section.getFacultyId()) {
             System.out.println("You are not assigned to this course section.");
+            pause();
             return false;
         }
         return true;
@@ -449,28 +529,8 @@ public class FacultyView {
         return 0.0;
     }
 
-    private void calculateGpa() {
-        try {
-            System.out.print("Student ID: ");
-            int studentId = Integer.parseInt(scanner.nextLine());
-            List<Enrollment> enrollments = enrollmentController.getStudentEnrollments(studentId);
-            double total = 0;
-            int count = 0;
-            for (Enrollment enrollment : enrollments) {
-                if (enrollment.getGpaPoints() != null) {
-                    total += enrollment.getGpaPoints();
-                    count++;
-                }
-            }
-            double gpa = count == 0 ? 0 : total / count;
-            Student student = studentController.getStudentById(studentId);
-            if (student != null) {
-                student.setCumulativeGpa(gpa);
-                studentController.updateStudentProfile(student);
-            }
-            System.out.printf("Calculated GPA for student %d: %.2f%n", studentId, gpa);
-        } catch (NumberFormatException ex) {
-            System.out.println("Invalid student ID.");
-        }
+    private void pause() {
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 }
+

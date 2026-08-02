@@ -1,5 +1,7 @@
 package com.joysistvi.sigsys.util;
 
+import java.util.Scanner;
+
 public final class ConsoleUIUtil {
     public static final String RESET = "\u001B[0m";
     public static final String BOLD = "\u001B[1m";
@@ -41,15 +43,11 @@ public final class ConsoleUIUtil {
 
     public static void printBannerTitle() {
         System.out.println(CYAN + repeat("=", WIDTH) + RESET);
-
-        int artWidth = WIDTH;
-
-        int padding = Math.max(0, (100 - artWidth) / 2);
+        int padding = Math.max(0, (100 - WIDTH) / 2);
         String leftMargin = repeat(" ", padding);
 
-        WELCOME_BANNER.lines().forEach(line -> {
-            System.out.println(GREEN + BOLD + leftMargin + line.stripTrailing() + RESET);
-        });
+        WELCOME_BANNER.lines().forEach(line ->
+                System.out.println(GREEN + BOLD + leftMargin + line.stripTrailing() + RESET));
 
         System.out.println(CYAN + repeat("=", WIDTH) + RESET);
     }
@@ -84,8 +82,37 @@ public final class ConsoleUIUtil {
         System.out.println(RED + BOLD + message + RESET);
     }
 
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    public static void promptEnterToContinue(Scanner scanner) {
+        System.out.print(YELLOW + "\nPress Enter to continue..." + RESET);
+        scanner.nextLine();
+    }
+
+    public static void clearAndPrintHeader(String title) {
+        clearScreen();
+        printBoxedSectionHeader(title);
+    }
+
+    public static void printTableHeader(int[] widths, String... headers) {
+        System.out.println(CYAN + BOLD + buildTableBorder(widths) + RESET);
+        System.out.println(CYAN + BOLD + buildTableRow(widths, headers) + RESET);
+        System.out.println(CYAN + BOLD + buildTableBorder(widths) + RESET);
+    }
+
+    public static void printTableRow(int[] widths, String... data) {
+        System.out.println(buildTableRow(widths, data));
+    }
+
+    public static void printTableFooter(int[] widths) {
+        System.out.println(CYAN + BOLD + buildTableBorder(widths) + RESET);
+    }
+
     private static String center(String value, int width) {
-        String text = value;
+        String text = value == null ? "" : value;
         if (text.length() >= width) {
             return text;
         }
@@ -99,4 +126,39 @@ public final class ConsoleUIUtil {
         return character.repeat(Math.max(0, count));
     }
 
+    private static String buildTableBorder(int[] widths) {
+        StringBuilder builder = new StringBuilder();
+        builder.append('+');
+        for (int width : widths) {
+            builder.append(repeat("-", Math.max(0, width + 2))).append('+');
+        }
+        return builder.toString();
+    }
+
+    private static String buildTableRow(int[] widths, String... values) {
+        StringBuilder builder = new StringBuilder();
+        builder.append('|');
+        for (int index = 0; index < widths.length; index++) {
+            String value = index < values.length ? values[index] : "";
+            builder.append(' ')
+                    .append(fitCell(value, widths[index]))
+                    .append(' ')
+                    .append('|');
+        }
+        return builder.toString();
+    }
+
+    private static String fitCell(String value, int width) {
+        String text = value == null ? "" : value;
+        if (width <= 0) {
+            return "";
+        }
+        if (text.length() <= width) {
+            return text + repeat(" ", width - text.length());
+        }
+        if (width <= 3) {
+            return text.substring(0, width);
+        }
+        return text.substring(0, width - 3) + "...";
+    }
 }

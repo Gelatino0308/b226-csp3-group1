@@ -16,6 +16,7 @@ public class MainView {
     }
 
     public void start() {
+        ConsoleUIUtil.clearScreen();
         ConsoleUIUtil.printBigTitle("WELCOME TO...");
         ConsoleUIUtil.printBannerTitle();
 
@@ -39,7 +40,7 @@ public class MainView {
     }
 
     private void handleLogin() {
-        ConsoleUIUtil.printBoxedSectionHeader("USER LOGIN");
+        ConsoleUIUtil.clearAndPrintHeader("USER LOGIN");
         System.out.print("Enter Username: ");
         String username = scanner.nextLine();
         System.out.print("Enter Password: ");
@@ -52,6 +53,7 @@ public class MainView {
             routeUserByRole(loggedInUser);
         } else {
             System.out.println("Login failed! Please check your credentials.");
+            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
     }
 

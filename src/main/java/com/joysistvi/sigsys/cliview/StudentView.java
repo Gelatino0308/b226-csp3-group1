@@ -47,7 +47,7 @@ public class StudentView {
         }
         boolean active = true;
         while (active) {
-            ConsoleUIUtil.printBoxedSectionHeader("STUDENT DASHBOARD");
+            ConsoleUIUtil.clearAndPrintHeader("STUDENT DASHBOARD");
             ConsoleUIUtil.printCenteredMenuOption(1, "View Personal Information");
             ConsoleUIUtil.printCenteredMenuOption(2, "View Enrolled Courses");
             ConsoleUIUtil.printCenteredMenuOption(3, "View Course Schedule");
@@ -76,21 +76,25 @@ public class StudentView {
         ConsoleUIUtil.printBoxedSectionHeader("MY ENROLLED COURSES");
         if (enrollments.isEmpty()) {
             System.out.println("You are not enrolled in any courses.");
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return;
         }
+        int[] widths = {12, 20, 8, 12, 10, 8, 12, 8};
+        ConsoleUIUtil.printTableHeader(widths, "Code", "Title", "Credits", "Days", "Time", "Room", "Status", "Grade");
         for (Enrollment enrollment : enrollments) {
             CourseSection section = sectionController.getSectionById(enrollment.getSectionId());
             Course course = section == null ? null : courseController.getCourseById(section.getCourseId());
             if (course == null || section == null) {
-                System.out.printf("Enrollment %d | Section %d | Course details unavailable | Status: %s%n",
-                        enrollment.getEnrollmentId(), enrollment.getSectionId(), enrollment.getRegistrationStatus());
+                ConsoleUIUtil.printTableRow(widths, String.valueOf(enrollment.getEnrollmentId()),
+                        "Unavailable", "N/A", "N/A", "N/A", "N/A", enrollment.getRegistrationStatus(), "N/A");
                 continue;
             }
-            System.out.printf("%s - %s | %d credits | %s %s | Room: %s | Status: %s | Grade: %s%n",
-                    course.getCourseCode(), course.getCourseTitle(), course.getCredits(), section.getScheduleDays(),
-                    section.getScheduleTime(), value(section.getRoom()), enrollment.getRegistrationStatus(),
-                    value(enrollment.getFinalGrade()));
+            ConsoleUIUtil.printTableRow(widths, course.getCourseCode(), course.getCourseTitle(),
+                    String.valueOf(course.getCredits()), section.getScheduleDays(), section.getScheduleTime(),
+                    value(section.getRoom()), enrollment.getRegistrationStatus(), value(enrollment.getFinalGrade()));
         }
+        ConsoleUIUtil.printTableFooter(widths);
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private void showPersonalInformation(Student student) {
@@ -100,31 +104,38 @@ public class StudentView {
         System.out.println("Date of Birth: " + value(student.getDob()));
         System.out.println("Phone: " + value(student.getPhone()));
         System.out.println("Address: " + value(student.getAddress()));
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private void registerForCourse(int studentId) {
+        ConsoleUIUtil.printBoxedSectionHeader("REGISTER FOR COURSE");
         AcademicPeriod period = periodController.getActivePeriod();
         if (period == null) {
             System.out.println("No active academic period is available.");
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return;
         }
         List<CourseSection> sections = sectionController.getSectionsByPeriod(period.getPeriodId());
         if (sections.isEmpty()) {
             System.out.println("No course sections are available.");
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return;
         }
-        printSections(sections);
+        printSectionsTable(sections);
         try {
             System.out.print("Enter Section ID to register: ");
             int sectionId = Integer.parseInt(scanner.nextLine());
             System.out.println(enrollmentController.enrollStudent(studentId, sectionId)
                     ? "Registration submitted for approval." : "Registration failed.");
+            ConsoleUIUtil.promptEnterToContinue(scanner);
         } catch (NumberFormatException ex) {
             System.out.println("Invalid section ID.");
+            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
     }
 
     private void requestOverload(int studentId) {
+        ConsoleUIUtil.printBoxedSectionHeader("REQUEST OVERLOAD UNITS");
         try {
             System.out.print("Enter requested maximum units: ");
             int requestedUnits = Integer.parseInt(scanner.nextLine());
@@ -133,20 +144,25 @@ public class StudentView {
             int maximumUnits = configuredLimit == null ? 24 : Integer.parseInt(configuredLimit);
             if (requestedUnits <= maximumUnits) {
                 System.out.println("Requested units must be greater than the current maximum of " + maximumUnits + ".");
+                ConsoleUIUtil.promptEnterToContinue(scanner);
                 return;
             }
             System.out.println(overloadController.request(studentId, requestedUnits)
                     ? "Overload request submitted for Admin approval."
                     : "A pending overload request already exists or the request could not be submitted.");
+            ConsoleUIUtil.promptEnterToContinue(scanner);
         } catch (NumberFormatException exception) {
             System.out.println("Invalid units value.");
+            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
     }
 
     private void showSchedule(int studentId) {
+        ConsoleUIUtil.printBoxedSectionHeader("COURSE SCHEDULE");
         AcademicPeriod period = periodController.getActivePeriod();
         if (period == null) {
             System.out.println("No active academic period is available.");
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return;
         }
         List<CourseSection> sections = sectionController.getSectionsByPeriod(period.getPeriodId());
@@ -158,8 +174,9 @@ public class StudentView {
             }
         }
         sections.removeIf(section -> !enrolledSectionIds.contains(section.getSectionId()));
-        ConsoleUIUtil.printBoxedSectionHeader("COURSE SCHEDULE: " + period.getTermName());
-        printSections(sections);
+        System.out.println("Term: " + period.getTermName());
+        printSectionsTable(sections);
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private void showGrades(Student student) {
@@ -167,6 +184,8 @@ public class StudentView {
         double total = 0;
         int graded = 0;
         ConsoleUIUtil.printBoxedSectionHeader("FINAL GRADES & GPA");
+        int[] widths = {30, 12, 10, 10};
+        ConsoleUIUtil.printTableHeader(widths, "Course", "Status", "Grade", "GPA");
         for (Enrollment enrollment : enrollments) {
             if (enrollment.getGpaPoints() != null) {
                 total += enrollment.getGpaPoints();
@@ -177,12 +196,13 @@ public class StudentView {
             String courseName = course == null ? "Course unavailable" : course.getCourseCode() + " - " + course.getCourseTitle();
             double finalPercentage = calculateFinalPercentage(enrollment);
             String result = finalPercentage < 0 ? "N/A" : finalPercentage < 50 ? "FAILED" : "PASSED";
-            System.out.printf("Course: %s | Status: %s | Grade: %s | GPA: %s%n",
-                    courseName, result, value(enrollment.getFinalGrade()),
-                    enrollment.getGpaPoints() == null ? "N/A" : enrollment.getGpaPoints());
+            ConsoleUIUtil.printTableRow(widths, courseName, result, value(enrollment.getFinalGrade()),
+                    enrollment.getGpaPoints() == null ? "N/A" : String.valueOf(enrollment.getGpaPoints()));
         }
+        ConsoleUIUtil.printTableFooter(widths);
         double gpa = graded == 0 ? 0 : total / graded;
         System.out.printf("Calculated GPA: %.2f%n", gpa);
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private double calculateFinalPercentage(Enrollment enrollment) {
@@ -203,8 +223,10 @@ public class StudentView {
     }
 
     private void requestTranscript(int studentId) {
+        ConsoleUIUtil.printBoxedSectionHeader("REQUEST ACADEMIC TRANSCRIPT");
         System.out.println(transcriptController.requestTranscript(studentId)
                 ? "Academic transcript request submitted." : "Could not submit transcript request.");
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private void viewOfficialTranscript(Student student) {
@@ -219,27 +241,28 @@ public class StudentView {
         }
         if (!completed) {
             System.out.println("No official transcript is available yet. The Registrar must complete your request first.");
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return;
         }
 
         ConsoleUIUtil.printBoxedSectionHeader("OFFICIAL TRANSCRIPT RECORD");
         System.out.println(student.getFirstName() + " " + student.getLastName()
                 + " (Student " + student.getStudentId() + ")");
-        System.out.printf("%-12s %-28s %-12s %-10s %-10s%n",
-                "Course", "Title", "Status", "Grade", "GPA");
+        int[] widths = {12, 28, 12, 10, 10};
+        ConsoleUIUtil.printTableHeader(widths, "Course", "Title", "Status", "Grade", "GPA");
         for (Enrollment enrollment : enrollmentController.getStudentEnrollments(student.getStudentId())) {
             CourseSection section = sectionController.getSectionById(enrollment.getSectionId());
             Course course = section == null ? null : courseController.getCourseById(section.getCourseId());
             if (course != null) {
                 double finalPercentage = calculateFinalPercentage(enrollment);
                 String result = finalPercentage < 0 ? "N/A" : finalPercentage < 50 ? "FAILED" : "PASSED";
-                System.out.printf("%-12s %-28s %-12s %-10s %-10s%n", course.getCourseCode(),
-                        course.getCourseTitle(), result,
+                ConsoleUIUtil.printTableRow(widths, course.getCourseCode(), course.getCourseTitle(), result,
                         value(enrollment.getFinalGrade()),
-                        enrollment.getGpaPoints() == null ? "N/A" : enrollment.getGpaPoints());
+                        enrollment.getGpaPoints() == null ? "N/A" : String.valueOf(enrollment.getGpaPoints()));
             }
         }
-        ConsoleUIUtil.printDivider("=");
+        ConsoleUIUtil.printTableFooter(widths);
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private void printSections(List<CourseSection> sections) {
@@ -247,11 +270,23 @@ public class StudentView {
             System.out.println("No sections found.");
             return;
         }
-        for (CourseSection section : sections) {
-            System.out.printf("Section %d | Course %d | Faculty %d | Days: %s | Time: %s | Room: %s | Capacity: %d%n",
-                    section.getSectionId(), section.getCourseId(), section.getFacultyId(), section.getScheduleDays(),
-                    section.getScheduleTime(), value(section.getRoom()), section.getCapacity());
+        printSectionsTable(sections);
+    }
+
+    private void printSectionsTable(List<CourseSection> sections) {
+        if (sections.isEmpty()) {
+            System.out.println("No sections found.");
+            return;
         }
+        int[] widths = {10, 10, 10, 12, 10, 8, 10};
+        ConsoleUIUtil.printTableHeader(widths, "Section", "Course", "Faculty", "Days", "Time", "Room", "Capacity");
+        for (CourseSection section : sections) {
+            ConsoleUIUtil.printTableRow(widths, String.valueOf(section.getSectionId()),
+                    String.valueOf(section.getCourseId()), String.valueOf(section.getFacultyId()),
+                    section.getScheduleDays(), section.getScheduleTime(), value(section.getRoom()),
+                    String.valueOf(section.getCapacity()));
+        }
+        ConsoleUIUtil.printTableFooter(widths);
     }
 
     private String value(Object value) {
