@@ -1,4 +1,4 @@
-package com.joysistvi.sigsys.dao;
+package com.joysistvi.sigsys.repository;
 
 import com.joysistvi.sigsys.config.DbConnection;
 import com.joysistvi.sigsys.model.OverloadRequest;
@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OverloadRequestDao {
+public class OverloadRequestRepositoryImpl implements OverloadRequestRepository {
     private boolean ensureTable(Connection connection) throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS overload_requests ("
                 + "request_id INT UNSIGNED NOT NULL AUTO_INCREMENT,"

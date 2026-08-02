@@ -5,5 +5,6 @@ import java.util.List;
 
 public interface GradeDetailRepository {
     boolean addGradeDetail(GradeDetail gradeDetail);
+    boolean saveAssessmentMark(GradeDetail gradeDetail);
     List<GradeDetail> getGradesByEnrollment(int enrollmentId);
 }
