@@ -1,0 +1,66 @@
+package com.joysistvi.sigsys.cliview;
+
+import com.joysistvi.sigsys.controller.UserController;
+import com.joysistvi.sigsys.model.User;
+
+import java.util.Scanner;
+
+public class MainView {
+    private final UserController userController;
+    private final Scanner scanner;
+
+    public MainView() {
+        this.userController = new UserController();
+        this.scanner = new Scanner(System.in);
+    }
+
+    public void start() {
+        System.out.println("==================================================");
+        System.out.println("   STUDENT INFORMATION & GRADING SYSTEM (SIGS)   ");
+        System.out.println("==================================================");
+
+        boolean running = true;
+        while (running) {
+            System.out.println("\n[1] Login");
+            System.out.println("[2] Exit System");
+            System.out.print("Select an option: ");
+
+            String choice = scanner.nextLine();
+            switch (choice) {
+                case "1" -> handleLogin();
+                case "2" -> {
+                    System.out.println("Exiting system. Goodbye!");
+                    running = false;
+                }
+                default -> System.out.println("Invalid selection. Please try again.");
+            }
+        }
+    }
+
+    private void handleLogin() {
+        System.out.println("\n--- USER LOGIN ---");
+        System.out.print("Enter Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter Password: ");
+        String password = scanner.nextLine();
+
+        User loggedInUser = userController.login(username, password);
+
+        if (loggedInUser != null) {
+            System.out.println("\nWelcome, " + loggedInUser.getUsername() + " [" + loggedInUser.getRole() + "]");
+            routeUserByRole(loggedInUser);
+        } else {
+            System.out.println("Login failed! Please check your credentials.");
+        }
+    }
+
+    private void routeUserByRole(User user) {
+        switch (user.getRole().toUpperCase()) {
+            case "STUDENT" -> new StudentView(user, scanner).showMenu();
+            case "FACULTY" -> new FacultyView(user, scanner).showMenu();
+            case "REGISTRAR" -> new RegistrarView(user, scanner).showMenu();
+            case "ADMIN" -> new AdminView(user, scanner).showMenu();
+            default -> System.out.println("Error: Unrecognized user role.");
+        }
+    }
+}

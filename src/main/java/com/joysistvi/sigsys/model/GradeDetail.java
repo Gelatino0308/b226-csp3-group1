@@ -30,6 +30,9 @@ public class GradeDetail {
         this.lastUpdated = lastUpdated;
     }
 
+    public GradeDetail() {
+    }
+
     public int getGradeDetailId() {
         return gradeDetailId;
     }

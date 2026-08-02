@@ -36,6 +36,10 @@ public class TranscriptRequest {
         this.processedById = processedById;
     }
 
+    public TranscriptRequest() {
+
+    }
+
     public int getRequestId() {
         return requestId;
     }
@@ -98,5 +102,9 @@ public class TranscriptRequest {
 
     public void setProcessedByUsername(String processedByUsername) {
         this.processedByUsername = processedByUsername;
+    }
+
+    public void setProcessedBy(Integer processedBy) {
+        this.processedById = processedBy == null ? 0 : processedBy;
     }
 }

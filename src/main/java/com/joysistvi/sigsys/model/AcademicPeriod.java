@@ -24,6 +24,9 @@ public class AcademicPeriod {
         this.isActive = isActive;
     }
 
+    public AcademicPeriod() {
+    }
+
     public int getPeriodId() {
         return periodId;
     }
@@ -63,4 +66,5 @@ public class AcademicPeriod {
     public void setActive(boolean active) {
         isActive = active;
     }
+
 }

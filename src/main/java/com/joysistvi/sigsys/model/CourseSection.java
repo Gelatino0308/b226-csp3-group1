@@ -47,6 +47,9 @@ public class CourseSection {
         this.capacity = capacity;
     }
 
+    public CourseSection() {
+    }
+
     public int getSectionId() {
         return sectionId;
     }
