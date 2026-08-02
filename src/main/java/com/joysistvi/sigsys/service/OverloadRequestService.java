@@ -1,8 +1,6 @@
 package com.joysistvi.sigsys.service;
-
 import com.joysistvi.sigsys.model.OverloadRequest;
 import java.util.List;
-
 public interface OverloadRequestService {
     boolean request(int studentId, int requestedUnits);
     List<OverloadRequest> getPendingRequests();

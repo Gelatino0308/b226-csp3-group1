@@ -18,8 +18,8 @@ public class AttendanceServiceImpl implements AttendanceService {
                 || !attendance.getStatus().trim().toUpperCase().matches("PRESENT|ABSENT|LATE|EXCUSED")) {
             return false;
         }
-        if (enrollmentRepository.getEnrollmentById(attendance.getEnrollmentId()) == null) return false;
         attendance.setStatus(attendance.getStatus().trim().toUpperCase());
+        if (enrollmentRepository.getEnrollmentById(attendance.getEnrollmentId()) == null) return false;
         return attendanceRepository.saveAttendance(attendance);
     }
 

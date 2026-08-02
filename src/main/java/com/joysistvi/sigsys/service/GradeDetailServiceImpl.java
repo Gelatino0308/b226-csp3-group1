@@ -29,8 +29,7 @@ public class GradeDetailServiceImpl implements GradeDetailService {
         return enrollmentId > 0 ? gradeRepository.getGradesByEnrollment(enrollmentId) : java.util.Collections.emptyList();
     }
 
-    @Override
-    public boolean saveTermMark(int enrollmentId, String term, double score, double maxScore) {
+    @Override public boolean saveTermMark(int enrollmentId, String term, double score, double maxScore) {
         if (enrollmentId <= 0 || term == null || maxScore <= 0 || score < 0 || score > maxScore) return false;
         String normalizedTerm = term.trim().toUpperCase();
         if (!normalizedTerm.matches("PRELIM|MIDTERM|FINALS")) return false;
@@ -38,11 +37,8 @@ public class GradeDetailServiceImpl implements GradeDetailService {
         if (enrollment == null || !"ENROLLED".equalsIgnoreCase(enrollment.getRegistrationStatus())) return false;
         if (enrollment.getFinalGrade() != null && !enrollment.getFinalGrade().trim().isEmpty()) return false;
         GradeDetail grade = new GradeDetail();
-        grade.setEnrollmentId(enrollmentId);
-        grade.setAssessmentName(normalizedTerm);
-        grade.setScoreObtained(score);
-        grade.setMaxScore(maxScore);
-        grade.setWeightPercentage(100.0 / 3.0);
+        grade.setEnrollmentId(enrollmentId); grade.setAssessmentName(normalizedTerm);
+        grade.setScoreObtained(score); grade.setMaxScore(maxScore); grade.setWeightPercentage(100.0 / 3.0);
         return gradeRepository.saveAssessmentMark(grade);
     }
 }

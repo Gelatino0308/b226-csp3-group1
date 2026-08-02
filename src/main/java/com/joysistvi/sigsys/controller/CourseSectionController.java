@@ -1,10 +1,8 @@
 package com.joysistvi.sigsys.controller;
-
 import com.joysistvi.sigsys.model.CourseSection;
 import com.joysistvi.sigsys.service.CourseSectionService;
 import com.joysistvi.sigsys.service.CourseSectionServiceImpl;
 import java.util.List;
-
 public class CourseSectionController {
     private final CourseSectionService sectionService = new CourseSectionServiceImpl();
     public boolean createSection(CourseSection section) { return sectionService.createSection(section); }

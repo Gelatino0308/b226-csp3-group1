@@ -16,8 +16,5 @@ public class SystemConfigServiceImpl implements SystemConfigService {
         return key != null && !key.trim().isEmpty() && value != null && configRepository.updateValue(key.trim(), value);
     }
 
-    @Override
-    public java.util.List<com.joysistvi.sigsys.model.SystemConfig> getAllConfigs() {
-        return configRepository.getAll();
-    }
+    @Override public java.util.List<com.joysistvi.sigsys.model.SystemConfig> getAllConfigs() { return configRepository.getAll(); }
 }

@@ -1,10 +1,8 @@
 package com.joysistvi.sigsys.controller;
-
 import com.joysistvi.sigsys.model.Student;
 import com.joysistvi.sigsys.service.StudentService;
 import com.joysistvi.sigsys.service.StudentServiceImpl;
 import java.util.List;
-
 public class StudentController {
     private final StudentService studentService = new StudentServiceImpl();
     public List<Student> getAllStudents() { return studentService.getAllStudents(); }

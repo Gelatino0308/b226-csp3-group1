@@ -1,10 +1,8 @@
 package com.joysistvi.sigsys.controller;
-
 import com.joysistvi.sigsys.model.OverloadRequest;
 import com.joysistvi.sigsys.service.OverloadRequestService;
 import com.joysistvi.sigsys.service.OverloadRequestServiceImpl;
 import java.util.List;
-
 public class OverloadRequestController {
     private final OverloadRequestService requestService = new OverloadRequestServiceImpl();
     public boolean request(int studentId, int requestedUnits) { return requestService.request(studentId, requestedUnits); }

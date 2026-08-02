@@ -23,12 +23,9 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public Faculty getFacultyByUserId(int userId) {
-        return userId > 0 ? facultyRepository.getFacultyByUserId(userId) : null;
-    }
-
-    @Override
     public List<Faculty> getAllFaculty() {
         return facultyRepository.getAllFaculty();
     }
+
+    @Override public Faculty getFacultyByUserId(int userId) { return userId > 0 ? facultyRepository.getFacultyByUserId(userId) : null; }
 }

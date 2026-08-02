@@ -24,19 +24,7 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.getAllCourses();
     }
 
-    @Override
-    public Course getCourseById(int courseId) {
-        return courseId > 0 ? courseRepository.getCourseById(courseId) : null;
-    }
-
-    @Override
-    public Course getCourseByCode(String courseCode) {
-        return courseCode == null || courseCode.trim().isEmpty()
-                ? null : courseRepository.getCourseByCode(courseCode.trim());
-    }
-
-    @Override
-    public boolean deleteCourse(int courseId) {
-        return courseId > 0 && courseRepository.deleteCourse(courseId);
-    }
+    @Override public Course getCourseById(int courseId) { return courseId > 0 ? courseRepository.getCourseById(courseId) : null; }
+    @Override public Course getCourseByCode(String courseCode) { return courseCode == null || courseCode.trim().isEmpty() ? null : courseRepository.getCourseByCode(courseCode.trim()); }
+    @Override public boolean deleteCourse(int courseId) { return courseId > 0 && courseRepository.deleteCourse(courseId); }
 }
