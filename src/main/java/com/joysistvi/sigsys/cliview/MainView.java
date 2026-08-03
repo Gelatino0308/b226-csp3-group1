@@ -49,7 +49,7 @@ public class MainView {
         User loggedInUser = userController.login(username, password);
 
         if (loggedInUser != null) {
-            System.out.println("\nWelcome, " + loggedInUser.getUsername() + " [" + loggedInUser.getRole() + "]");
+            ConsoleUIUtil.printBigTitle("Welcome, " + loggedInUser.getUsername() + " [" + loggedInUser.getRole() + "]");
             routeUserByRole(loggedInUser);
         } else {
             System.out.println("Login failed! Please check your credentials.");

@@ -56,7 +56,7 @@ public class FacultyView {
                 case "7" -> active = false;
                 default -> {
                     ConsoleUIUtil.printError("Invalid option.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                 }
             }
         }
@@ -78,13 +78,13 @@ public class FacultyView {
                 course = courseController.getCourseByCode(courseCode);
                 if (course == null) {
                     System.out.println("No course found with code " + courseCode + ".");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
                 List<CourseSection> sections = sectionController.getSectionsByCourse(course.getCourseId());
                 if (sections.isEmpty()) {
                     System.out.println("No sections are available for this course.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
                 ConsoleUIUtil.printBoxedSectionHeader("SECTIONS FOR " + course.getCourseCode());
@@ -109,7 +109,7 @@ public class FacultyView {
                 }
                 if (section == null) {
                     System.out.println("That section does not belong to the selected course.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
             } else if (searchType == 2) {
@@ -118,13 +118,13 @@ public class FacultyView {
                 section = sectionController.getSectionById(sectionId);
                 if (section == null) {
                     System.out.println("No section found with ID " + sectionId + ".");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
                 course = courseController.getCourseById(section.getCourseId());
                 if (course == null) {
                     System.out.println("No course is assigned to this section.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
                 ConsoleUIUtil.printBoxedSectionHeader("COURSES IN SECTION " + sectionId);
@@ -132,12 +132,12 @@ public class FacultyView {
                 System.out.print("Choose course: ");
                 if (Integer.parseInt(scanner.nextLine()) != 1) {
                     ConsoleUIUtil.printError("Invalid course choice.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
             } else {
                 System.out.println("Invalid search type.");
-                pause();
+                ConsoleUIUtil.promptEnterToContinue(scanner);
                 return;
             }
 
@@ -146,7 +146,7 @@ public class FacultyView {
                     + course.getCourseTitle() + " | SECTION " + section.getSectionId());
             if (enrollments.isEmpty()) {
                 System.out.println("No students are enrolled in this section.");
-                pause();
+                ConsoleUIUtil.promptEnterToContinue(scanner);
                 return;
             }
             int[] widths = {12, 25, 16, 15};
@@ -162,10 +162,10 @@ public class FacultyView {
                 }
             }
             ConsoleUIUtil.printTableFooter(widths);
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
         } catch (NumberFormatException ex) {
             System.out.println("Invalid course or section ID.");
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
     }
 
@@ -174,13 +174,13 @@ public class FacultyView {
         Faculty faculty = facultyController.getFacultyByUserId(user.getUserId());
         if (faculty == null) {
             System.out.println("No faculty profile found.");
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return;
         }
         List<CourseSection> sections = sectionController.getSectionsByFaculty(faculty.getFacultyId());
         if (sections.isEmpty()) {
             System.out.println("No assigned course sections found.");
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return;
         }
         System.out.println("\nFaculty: " + faculty.getFirstName() + " " + faculty.getLastName());
@@ -216,7 +216,7 @@ public class FacultyView {
             }
             ConsoleUIUtil.printTableFooter(rosterWidths);
         }
-        pause();
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private void inputAttendance() {
@@ -229,7 +229,7 @@ public class FacultyView {
             Course course = courseController.getCourseByCode(courseCode);
             if (course == null) {
                 System.out.println("No course found with code " + courseCode + ".");
-                pause();
+                ConsoleUIUtil.promptEnterToContinue(scanner);
                 return;
             }
             Enrollment enrollment = enrollmentController.getEnrollmentByStudentAndCourse(studentId, course.getCourseId());
@@ -237,7 +237,7 @@ public class FacultyView {
             CourseSection section = enrollment == null ? null : sectionController.getSectionById(enrollment.getSectionId());
             if (enrollment == null || student == null || section == null) {
                 System.out.println("No enrollment found for this student and course.");
-                pause();
+                ConsoleUIUtil.promptEnterToContinue(scanner);
                 return;
             }
             if (isAssignedSection(section)) {
@@ -253,7 +253,7 @@ public class FacultyView {
                 System.out.print("Confirm this student and subject? (Y/N): ");
                 if (!scanner.nextLine().trim().equalsIgnoreCase("Y")) {
                     System.out.println("Attendance input cancelled.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
                 System.out.print("Days attended: ");
@@ -265,12 +265,12 @@ public class FacultyView {
                     calculateAndSubmitGrade(enrollment.getEnrollmentId());
                 } else {
                     System.out.println("Attendance summary could not be saved. Check the enrollment and day counts.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                 }
             }
         } catch (IllegalArgumentException ex) {
             System.out.println("Invalid attendance input.");
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
     }
 
@@ -282,14 +282,14 @@ public class FacultyView {
             CourseSection section = sectionController.getSectionById(sectionId);
             if (section == null) {
                 System.out.println("No course section found with ID " + sectionId + ".");
-                pause();
+                ConsoleUIUtil.promptEnterToContinue(scanner);
                 return;
             }
             if (isAssignedSection(section)) {
                 Course course = courseController.getCourseById(section.getCourseId());
                 if (course == null) {
                     System.out.println("No subject is assigned to this section.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
 
@@ -299,14 +299,14 @@ public class FacultyView {
                 int subjectChoice = Integer.parseInt(scanner.nextLine());
                 if (subjectChoice != 1) {
                     System.out.println("Invalid subject choice.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
 
                 List<Enrollment> enrollments = enrollmentController.getSectionEnrollments(sectionId);
                 if (enrollments.isEmpty()) {
                     System.out.println("No students are enrolled in this subject and section.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
                 ConsoleUIUtil.printBoxedSectionHeader("STUDENTS ENROLLED IN " + course.getCourseCode());
@@ -342,7 +342,7 @@ public class FacultyView {
                 Student student = studentController.getStudentById(studentId);
                 if (enrollment == null || student == null) {
                     System.out.println("That student is not enrolled in the selected subject and section.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
 
@@ -358,7 +358,7 @@ public class FacultyView {
                 System.out.print("Confirm this student and subject? (Y/N): ");
                 if (!scanner.nextLine().trim().equalsIgnoreCase("Y")) {
                     System.out.println("Mark input cancelled.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
                 int enrollmentId = enrollment.getEnrollmentId();
@@ -373,7 +373,7 @@ public class FacultyView {
                 else if (termChoice == 3) term = "FINALS";
                 else {
                     System.out.println("Invalid term choice.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
                 System.out.print("Score obtained: ");
@@ -385,12 +385,12 @@ public class FacultyView {
                     calculateAndSubmitGrade(enrollmentId);
                 } else {
                     System.out.println("Term mark could not be saved.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                 }
             }
         } catch (NumberFormatException ex) {
             System.out.println("Invalid marks input.");
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
     }
 
@@ -410,7 +410,7 @@ public class FacultyView {
             Course course = courseController.getCourseByCode(courseCode);
             if (course == null) {
                 System.out.println("No course found with code " + courseCode + ".");
-                pause();
+                ConsoleUIUtil.promptEnterToContinue(scanner);
                 return;
             }
             Enrollment enrollment = enrollmentController.getEnrollmentByStudentAndCourse(studentId, course.getCourseId());
@@ -418,7 +418,7 @@ public class FacultyView {
             CourseSection section = enrollment == null ? null : sectionController.getSectionById(enrollment.getSectionId());
             if (enrollment == null || student == null || section == null) {
                 System.out.println("No enrollment found for this student and course.");
-                pause();
+                ConsoleUIUtil.promptEnterToContinue(scanner);
                 return;
             }
             if (isAssignedSection(section)) {
@@ -434,14 +434,14 @@ public class FacultyView {
                 System.out.print("Confirm this student and subject? (Y/N): ");
                 if (!scanner.nextLine().trim().equalsIgnoreCase("Y")) {
                     System.out.println("Final-grade calculation cancelled.");
-                    pause();
+                    ConsoleUIUtil.promptEnterToContinue(scanner);
                     return;
                 }
                 calculateAndSubmitGrade(enrollment.getEnrollmentId());
             }
         } catch (NumberFormatException ex) {
             System.out.println("Invalid student ID.");
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
     }
 
@@ -453,7 +453,7 @@ public class FacultyView {
         }
         if (!marks.keySet().containsAll(List.of("PRELIM", "MIDTERM", "FINALS"))) {
             System.out.println("Enter PRELIM, MIDTERM, and FINALS marks before calculating the final grade.");
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return;
         }
         double percentage = 0;
@@ -470,7 +470,7 @@ public class FacultyView {
         }
         if (currentEnrollment == null || currentEnrollment.getMaxAttendance() <= 0) {
             System.out.println("Enter the maximum attendance before calculating the final grade.");
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return;
         }
         percentage = percentage * 0.90
@@ -480,17 +480,17 @@ public class FacultyView {
         System.out.printf("Calculated result: %.2f%% = %s (GPA %.2f)%n", percentage, letterGrade, gpa);
         if (!enrollmentController.submitGrade(enrollmentId, letterGrade, gpa)) {
             System.out.println("The calculated grade could not be saved.");
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return;
         }
-        pause();
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private boolean isAssignedSection(CourseSection section) {
         Faculty faculty = facultyController.getFacultyByUserId(user.getUserId());
         if (faculty == null || faculty.getFacultyId() != section.getFacultyId()) {
             System.out.println("You are not assigned to this course section.");
-            pause();
+            ConsoleUIUtil.promptEnterToContinue(scanner);
             return false;
         }
         return true;
@@ -521,10 +521,6 @@ public class FacultyView {
         if (percentage >= 70) return 1.7;
         if (percentage >= 60) return 1.0;
         return 0.0;
-    }
-
-    private void pause() {
-        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 }
 
