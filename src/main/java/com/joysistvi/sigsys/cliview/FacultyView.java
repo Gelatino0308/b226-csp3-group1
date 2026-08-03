@@ -39,7 +39,6 @@ public class FacultyView {
         boolean active = true;
         while (active) {
             ConsoleUIUtil.clearAndPrintHeader("FACULTY DASHBOARD");
-            ConsoleUIUtil.printBoxedSectionHeader("FACULTY DASHBOARD");
             ConsoleUIUtil.printCenteredMenuOption(1, "View Assigned Courses & Rosters");
             ConsoleUIUtil.printCenteredMenuOption(2, "View Students by Course and Section");
             ConsoleUIUtil.printCenteredMenuOption(3, "Input Attendance");
@@ -65,7 +64,6 @@ public class FacultyView {
 
     private void showStudentsByCourseAndSection() {
         ConsoleUIUtil.clearAndPrintHeader("STUDENTS BY COURSE AND SECTION");
-        ConsoleUIUtil.printBoxedSectionHeader("STUDENTS BY COURSE AND SECTION");
         try {
             ConsoleUIUtil.printCenteredMenuOption(1, "Search by Course");
             ConsoleUIUtil.printCenteredMenuOption(2, "Search by Section");
@@ -173,7 +171,6 @@ public class FacultyView {
 
     private void showAssignedCourses() {
         ConsoleUIUtil.clearAndPrintHeader("ASSIGNED COURSES AND ROSTERS");
-        ConsoleUIUtil.printBoxedSectionHeader("ASSIGNED COURSES AND ROSTERS");
         Faculty faculty = facultyController.getFacultyByUserId(user.getUserId());
         if (faculty == null) {
             System.out.println("No faculty profile found.");
@@ -223,7 +220,6 @@ public class FacultyView {
     }
 
     private void inputAttendance() {
-        ConsoleUIUtil.clearAndPrintHeader("INPUT ATTENDANCE");
         ConsoleUIUtil.printBoxedSectionHeader("INPUT ATTENDANCE");
         try {
             System.out.print("Student ID: ");
@@ -279,7 +275,6 @@ public class FacultyView {
     }
 
     private void inputMarks() {
-        ConsoleUIUtil.clearAndPrintHeader("INPUT MARKS");
         ConsoleUIUtil.printBoxedSectionHeader("INPUT MARKS");
         try {
             System.out.print("Course Section ID: ");
@@ -406,7 +401,6 @@ public class FacultyView {
     }
 
     private void calculateAndSubmitGrade() {
-        ConsoleUIUtil.clearAndPrintHeader("CALCULATE FINAL GRADE");
         ConsoleUIUtil.printBoxedSectionHeader("CALCULATE AND SUBMIT FINAL GRADE");
         try {
             System.out.print("Student ID: ");

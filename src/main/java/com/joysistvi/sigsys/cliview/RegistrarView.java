@@ -455,7 +455,7 @@ public class RegistrarView {
     }
 
     private void processRegistration() {
-        ConsoleUIUtil.printBoxedSectionHeader("PROCESS REGISTRATION");
+        ConsoleUIUtil.clearAndPrintHeader("PROCESS REGISTRATION");
         List<Enrollment> enrollments = enrollmentController.getAllEnrollments();
         if (enrollments.isEmpty()) {
             System.out.println("No registration requests found.");
@@ -520,7 +520,7 @@ public class RegistrarView {
                 ConsoleUIUtil.promptEnterToContinue(scanner);
                 return;
             }
-            ConsoleUIUtil.printBoxedSectionHeader("AVAILABLE COURSE SECTIONS");
+            ConsoleUIUtil.clearAndPrintHeader("AVAILABLE COURSE SECTIONS");
             int[] widths = {10, 14, 30, 12, 16, 12, 12};
             ConsoleUIUtil.printTableHeader(widths, "Section", "Course", "Title", "Schedule", "Time", "Capacity", "Enrolled");
             for (CourseSection section : sections) {
@@ -541,18 +541,18 @@ public class RegistrarView {
             int sectionId = Integer.parseInt(scanner.nextLine());
             System.out.println(enrollmentController.enrollStudent(studentId, sectionId)
                     ? "Student enrolled with pending status." : "Student could not be enrolled.");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         } catch (NumberFormatException ex) {
             ConsoleUIUtil.printError("Invalid enrollment input.");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private void managePeriods() {
-        ConsoleUIUtil.printBoxedSectionHeader("MANAGE ACADEMIC PERIODS");
+        ConsoleUIUtil.clearAndPrintHeader("MANAGE ACADEMIC PERIODS");
         List<AcademicPeriod> periods = periodController.getAllPeriods();
         if (periods.isEmpty()) {
             System.out.println("No academic periods found.");
+            ConsoleUIUtil.printDivider("-");
         } else {
             int[] widths = {10, 24, 14, 14, 10};
             ConsoleUIUtil.printTableHeader(widths, "Period ID", "Term Name", "Start Date", "End Date", "Active");
@@ -580,11 +580,10 @@ public class RegistrarView {
             period.setActive(scanner.nextLine().equalsIgnoreCase("Y"));
             System.out.println(periodController.createPeriod(period)
                     ? "Academic period created." : "Academic period could not be created.");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         } catch (Exception ex) {
             System.out.println("Invalid academic period input.");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private LocalDate parseDate(String input) {
@@ -605,7 +604,7 @@ public class RegistrarView {
     }
 
     private void generateTranscript() {
-        ConsoleUIUtil.printBoxedSectionHeader("OFFICIAL TRANSCRIPT");
+        ConsoleUIUtil.printBoxedSectionHeader("GENERATE OFFICIAL TRANSCRIPT");
         try {
             System.out.print("Student ID: ");
             int studentId = Integer.parseInt(scanner.nextLine());
@@ -615,7 +614,8 @@ public class RegistrarView {
                 ConsoleUIUtil.promptEnterToContinue(scanner);
                 return;
             }
-            System.out.println(student.getFirstName() + " " + student.getLastName() + " (Student " + studentId + ")");
+            ConsoleUIUtil.clearAndPrintHeader("TRANSCRIPT FOR " + student.getFirstName() + " " + student.getLastName() +
+                    " (Student " + studentId + ")");
             List<Enrollment> enrollments = enrollmentController.getStudentEnrollments(studentId);
             if (enrollments.isEmpty()) {
                 System.out.println("No enrollment records found.");
@@ -631,16 +631,14 @@ public class RegistrarView {
                 }
                 ConsoleUIUtil.printTableFooter(widths);
             }
-            ConsoleUIUtil.printDivider("=");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         } catch (NumberFormatException ex) {
             System.out.println("Invalid student ID.");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private void processTranscript() {
-        ConsoleUIUtil.printBoxedSectionHeader("PROCESS TRANSCRIPT REQUEST");
+        ConsoleUIUtil.clearAndPrintHeader("PROCESS TRANSCRIPT REQUEST");
         List<TranscriptRequest> requests = transcriptController.getAllRequests();
         if (requests.isEmpty()) {
             System.out.println("No transcript requests found.");
@@ -664,11 +662,10 @@ public class RegistrarView {
             String status = scanner.nextLine();
             System.out.println(transcriptController.updateRequestStatus(requestId, status, user.getUserId())
                     ? "Transcript request updated." : "Transcript request could not be updated.");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         } catch (NumberFormatException ex) {
             ConsoleUIUtil.printError("Invalid request ID.");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private String value(String value) {

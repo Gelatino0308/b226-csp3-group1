@@ -97,20 +97,6 @@ public final class ConsoleUIUtil {
         printBoxedSectionHeader(title);
     }
 
-    public static void printTableHeader(int[] widths, String... headers) {
-        System.out.println(CYAN + BOLD + buildTableBorder(widths) + RESET);
-        System.out.println(CYAN + BOLD + buildTableRow(widths, headers) + RESET);
-        System.out.println(CYAN + BOLD + buildTableBorder(widths) + RESET);
-    }
-
-    public static void printTableRow(int[] widths, String... data) {
-        System.out.println(buildTableRow(widths, data));
-    }
-
-    public static void printTableFooter(int[] widths) {
-        System.out.println(CYAN + BOLD + buildTableBorder(widths) + RESET);
-    }
-
     private static String center(String value, int width) {
         String text = value == null ? "" : value;
         if (text.length() >= width) {
@@ -126,6 +112,29 @@ public final class ConsoleUIUtil {
         return character.repeat(Math.max(0, count));
     }
 
+
+    // TABLE DISPLAY METHODS
+    
+    public static void printTableHeader(int[] originalWidths, String... headers) {
+        int[] widths = adjustWidthsToFitHeader(originalWidths);
+        System.out.println(CYAN + BOLD + buildTableBorder(widths) + RESET);
+
+        System.out.println(buildTableRow(widths, GREEN + BOLD, headers));
+
+        System.out.println(CYAN + BOLD + buildTableBorder(widths) + RESET);
+    }
+
+    public static void printTableRow(int[] originalWidths, String... data) {
+        int[] widths = adjustWidthsToFitHeader(originalWidths);
+
+        System.out.println(buildTableRow(widths, RESET, data));
+    }
+
+    public static void printTableFooter(int[] originalWidths) {
+        int[] widths = adjustWidthsToFitHeader(originalWidths); // Auto-stretch
+        System.out.println(CYAN + BOLD + buildTableBorder(widths) + RESET);
+    }
+
     private static String buildTableBorder(int[] widths) {
         StringBuilder builder = new StringBuilder();
         builder.append('+');
@@ -135,15 +144,19 @@ public final class ConsoleUIUtil {
         return builder.toString();
     }
 
-    private static String buildTableRow(int[] widths, String... values) {
+    private static String buildTableRow(int[] widths, String textColor, String... values) {
         StringBuilder builder = new StringBuilder();
-        builder.append('|');
+
+        builder.append(CYAN).append(BOLD).append('|').append(RESET);
+
         for (int index = 0; index < widths.length; index++) {
             String value = index < values.length ? values[index] : "";
             builder.append(' ')
+                    .append(textColor)
                     .append(fitCell(value, widths[index]))
+                    .append(RESET)
                     .append(' ')
-                    .append('|');
+                    .append(CYAN).append(BOLD).append('|').append(RESET);
         }
         return builder.toString();
     }
@@ -160,5 +173,21 @@ public final class ConsoleUIUtil {
             return text.substring(0, width);
         }
         return text.substring(0, width - 3) + "...";
+    }
+
+
+    private static int[] adjustWidthsToFitHeader(int[] originalWidths) {
+        int[] widths = originalWidths.clone();
+        int overhead = (widths.length * 3) + 1;
+
+        int currentSum = 0;
+        for (int w : widths) currentSum += w;
+
+        int totalTableWidth = currentSum + overhead;
+
+        if (totalTableWidth < WIDTH) {
+            widths[widths.length - 1] += (WIDTH - totalTableWidth);
+        }
+        return widths;
     }
 }

@@ -40,7 +40,7 @@ public class MainView {
     }
 
     private void handleLogin() {
-        ConsoleUIUtil.clearAndPrintHeader("USER LOGIN");
+        ConsoleUIUtil.printBoxedSectionHeader("USER LOGIN");
         System.out.print("Enter Username: ");
         String username = scanner.nextLine();
         System.out.print("Enter Password: ");

@@ -73,7 +73,7 @@ public class StudentView {
 
     private void showEnrolledCourses(int studentId) {
         List<Enrollment> enrollments = enrollmentController.getStudentEnrollments(studentId);
-        ConsoleUIUtil.printBoxedSectionHeader("MY ENROLLED COURSES");
+        ConsoleUIUtil.clearAndPrintHeader("MY ENROLLED COURSES");
         if (enrollments.isEmpty()) {
             System.out.println("You are not enrolled in any courses.");
             ConsoleUIUtil.promptEnterToContinue(scanner);
@@ -98,7 +98,7 @@ public class StudentView {
     }
 
     private void showPersonalInformation(Student student) {
-        ConsoleUIUtil.printBoxedSectionHeader("PERSONAL INFORMATION");
+        ConsoleUIUtil.clearAndPrintHeader("PERSONAL INFORMATION");
         System.out.println("Student ID: " + student.getStudentId());
         System.out.println("Name: " + student.getFirstName() + " " + student.getLastName());
         System.out.println("Date of Birth: " + value(student.getDob()));
@@ -150,15 +150,15 @@ public class StudentView {
             System.out.println(overloadController.request(studentId, requestedUnits)
                     ? "Overload request submitted for Admin approval."
                     : "A pending overload request already exists or the request could not be submitted.");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
+
         } catch (NumberFormatException exception) {
             System.out.println("Invalid units value.");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private void showSchedule(int studentId) {
-        ConsoleUIUtil.printBoxedSectionHeader("COURSE SCHEDULE");
+        ConsoleUIUtil.clearAndPrintHeader("COURSE SCHEDULE");
         AcademicPeriod period = periodController.getActivePeriod();
         if (period == null) {
             System.out.println("No active academic period is available.");
@@ -183,7 +183,7 @@ public class StudentView {
         List<Enrollment> enrollments = enrollmentController.getStudentEnrollments(student.getStudentId());
         double total = 0;
         int graded = 0;
-        ConsoleUIUtil.printBoxedSectionHeader("FINAL GRADES & GPA");
+        ConsoleUIUtil.clearAndPrintHeader("FINAL GRADES & GPA");
         int[] widths = {30, 12, 10, 10};
         ConsoleUIUtil.printTableHeader(widths, "Course", "Status", "Grade", "GPA");
         for (Enrollment enrollment : enrollments) {
@@ -223,7 +223,7 @@ public class StudentView {
     }
 
     private void requestTranscript(int studentId) {
-        ConsoleUIUtil.printBoxedSectionHeader("REQUEST ACADEMIC TRANSCRIPT");
+        ConsoleUIUtil.clearAndPrintHeader("REQUEST ACADEMIC TRANSCRIPT");
         System.out.println(transcriptController.requestTranscript(studentId)
                 ? "Academic transcript request submitted." : "Could not submit transcript request.");
         ConsoleUIUtil.promptEnterToContinue(scanner);
@@ -245,7 +245,7 @@ public class StudentView {
             return;
         }
 
-        ConsoleUIUtil.printBoxedSectionHeader("OFFICIAL TRANSCRIPT RECORD");
+        ConsoleUIUtil.clearAndPrintHeader("OFFICIAL TRANSCRIPT RECORD");
         System.out.println(student.getFirstName() + " " + student.getLastName()
                 + " (Student " + student.getStudentId() + ")");
         int[] widths = {12, 28, 12, 10, 10};

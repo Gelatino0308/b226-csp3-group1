@@ -95,11 +95,10 @@ public class AdminView {
                 userController.deleteUser(newUser.getUserId());
                 System.out.println("User creation cancelled because the profile could not be created.");
             }
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         } else {
             System.out.println("Failed to create user account.");
-            ConsoleUIUtil.promptEnterToContinue(scanner);
         }
+        ConsoleUIUtil.promptEnterToContinue(scanner);
     }
 
     private boolean createProfile(User newUser) {
